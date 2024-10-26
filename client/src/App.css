@@ -1,0 +1,56 @@
+.input-div {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.input-item {
+  flex: 1 1 20%;
+}
+
+.max-width-20 {
+  max-width: 20%;
+}
+
+.max-width {
+  width: 80%;
+}
+
+.display-flex {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-tems: center;
+}
+
+.display-flex-col {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-tems: center;
+  gap: 10px;
+}
+
+.g-25 {
+  gap: 25px;
+}
+
+@media (max-width: 640px) {
+  .input-item {
+    flex: 1 1 99%;
+    max-width: 99%;
+  }
+  .display-flex {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .display-flex-col {
+    width: 99%;
+  }
+  .max-width {
+    width: 99%;
+  }
+}

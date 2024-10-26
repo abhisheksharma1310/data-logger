@@ -2,9 +2,9 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import mongoose from "mongoose";
+//import mongoose from "mongoose";
 import serialRouter from "./routes/serialRoutes.js";
-import { databaseConfig } from "./config/databaseConfig.js";
+//import { databaseConfig } from "./config/databaseConfig.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -19,13 +19,13 @@ const io = new Server(server, {
 app.use(express.json());
 
 // Database connection
-mongoose
-  .connect(databaseConfig.url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB", err));
+// mongoose
+//   .connect(databaseConfig.url, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("Connected to MongoDB"))
+//   .catch((err) => console.error("Could not connect to MongoDB", err));
 
 // Routers
 app.use("/serial", serialRouter(io));
