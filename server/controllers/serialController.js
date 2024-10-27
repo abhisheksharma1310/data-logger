@@ -34,7 +34,23 @@ const loadConfig = () => {
   return null;
 };
 
-// initialize serial port
+// initialize databse using save config
+const initMongoDB = (url) => {
+  // Connect to MongoDB
+  mongoose
+    .connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log("Connected to MongoDB");
+    })
+    .catch((err) => {
+      console.error("Error connecting to MongoDB:", err);
+    });
+};
+
+// initialize serial port based on given configuration
 const initSerialPort = async (config) => {
   const { comport, baudrate } = config;
   if (!port || !port.isOpen) {
@@ -57,7 +73,7 @@ const initSerialPort = async (config) => {
   }
 };
 
-// api function for configure serialLog.config.json file
+// api function for save configuration file received from client
 export const configureSerialPort = async (req, res, io) => {
   ioGlobal = io;
   const config = req.body;
@@ -78,21 +94,15 @@ export const configureSerialPort = async (req, res, io) => {
   }
 };
 
-// function for log serial data
+// function to start auto logging based on saved config file
 const startLogging = async () => {
   const config = loadConfig();
   if (!config) return;
 
   await initSerialPort(config);
 
-  const { logToFile, logToDatabase, mongoConfig, fileFormat } = config;
-
-  if (logToDatabase && mongoConfig) {
-    mongoose.connect(mongoConfig.url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-  }
+  const { logToFile, logToDatabase, mongoConfig, fileFormat, autoDelete } =
+    config;
 
   parser.on("data", async (data) => {
     const logData = `${new Date().toISOString()} - ${data}\n`;
@@ -117,19 +127,54 @@ const startLogging = async () => {
       }
     }
   });
+
+  // Schedule auto-delete if enabled
+  if (autoDelete && autoDelete.enabled) {
+    setInterval(() => {
+      const deleteDate = new Date();
+      deleteDate.setDate(deleteDate.getDate() - autoDelete.deleteAfterDays);
+
+      // Delete old logs from database
+      Log.deleteMany({
+        timestamp: { $lt: deleteDate },
+      }).exec();
+
+      // Delete old log files
+      fs.readdir(logDir, (err, files) => {
+        if (err) throw err;
+        files.forEach((file) => {
+          const filePath = path.join(logDir, file);
+          fs.stat(filePath, (err, stats) => {
+            if (err) throw err;
+            if (new Date(stats.mtime) < deleteDate) {
+              fs.unlink(filePath, (err) => {
+                if (err) throw err;
+              });
+            }
+          });
+        });
+      });
+    }, 24 * 60 * 60 * 1000); // Check every 24 hours
+  }
 };
 
 // Initialize logging on application start if autoLog is enabled
 const initializeLogging = async () => {
   const config = loadConfig();
+  if (config && config.mongoConfig.url) {
+    // call function to initialize mongo DB
+    initMongoDB(config.mongoConfig.url);
+  }
   if (config && config.autoLog) {
+    // call function to start logging
     await startLogging();
   }
 };
 
+// call function to initialize serial data logging
 initializeLogging();
 
-// api call function for retrive log file date wise
+// api function for send logs for requested date
 export const getLogsByDate = async (req, res) => {
   const { date } = req.params;
   try {
@@ -140,6 +185,30 @@ export const getLogsByDate = async (req, res) => {
       },
     });
     res.status(200).json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// api function for delete requested logs by date
+export const deleteLogsByDate = async (req, res) => {
+  const { date } = req.params;
+  try {
+    // Delete logs from database
+    await Log.deleteMany({
+      timestamp: {
+        $gte: new Date(`${date}T00:00:00.000Z`),
+        $lt: new Date(`${date}T23:59:59.999Z`),
+      },
+    });
+
+    // Delete log files
+    const logFile = path.join(logDir, `${date}.txt`);
+    if (fs.existsSync(logFile)) {
+      fs.unlinkSync(logFile);
+    }
+
+    res.status(200).json({ message: "Logs deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

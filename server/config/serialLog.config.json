@@ -1,11 +1,15 @@
 {
   "comport": "COM15",
   "baudrate": 9600,
-  "logToFile": true,
+  "logToFile": false,
   "logToDatabase": false,
   "mongoConfig": {
     "url": "mongodb://localhost:27017/dataLogger"
   },
   "fileFormat": "text",
-  "autoLog": true
+  "autoLog": true,
+  "autoDelete": {
+    "enabled": true,
+    "deleteAfterDays": 10
+  }
 }
