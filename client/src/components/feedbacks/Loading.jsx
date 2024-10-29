@@ -1,22 +1,16 @@
 import React from "react";
 import { Spin } from "antd";
 
-const Loading = ({ isLoading = false, isFetching = false }) => {
+const Loading = ({ isLoading = false }) => {
   return (
     <div
       style={{
         textAlign: "center",
         margin: "50px",
         padding: "50px",
-        display: `${isLoading || isFetching ? "block" : "none"}`,
+        display: `${isLoading ? "block" : "none"}`,
       }}
     >
-      {isFetching && (
-        <>
-          Fetching data...{" "}
-          <Spin spinning={isFetching} percent={"auto"} delay="500" />
-        </>
-      )}
       {isLoading && (
         <>
           Loading data...{" "}

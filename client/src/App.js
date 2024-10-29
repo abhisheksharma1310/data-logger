@@ -2,9 +2,9 @@ import * as React from "react";
 import { ConfigProvider, theme } from "antd";
 import MainLayout from "./components/layout/main-layout";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import SerialData from "./features/serialData/SerialData";
 import "./App.css";
 import Home from "./components/Home";
+import SerialConfig from "./features/serialConfig/SerialConfig";
 
 export default function App() {
   return (
@@ -25,7 +25,7 @@ export default function App() {
             <Routes>
               <Route exact path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/serial-data" element={<SerialData />} />
+              <Route path="/serial-config" element={<SerialConfig />} />
             </Routes>
           </MainLayout>
         </ConfigProvider>

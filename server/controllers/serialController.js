@@ -74,15 +74,29 @@ const initSerialPort = async (config) => {
 };
 
 // api function for save configuration file received from client
-export const configureSerialPort = async (req, res, io) => {
+export const configure = async (req, res, io) => {
   ioGlobal = io;
-  const config = req.body;
+  const { config } = req.body;
 
   try {
     // Save configuration to file
     const configPath = path.join(configDir, "serialLog.config.json");
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
 
+    res.status(200).json({
+      message: `Deployed successfully at ${new Date()}`,
+      config: config,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Failed to deploy configuration: ${error.message}` });
+  }
+};
+
+// api function to initialize or check serial port status
+export const checkSerialStatus = async (req, res) => {
+  try {
     // Initialize serial port and parser
     await initSerialPort(config);
 

@@ -23,23 +23,23 @@ const menuItems = [
   },
   {
     key: "1",
-    path: "/data-source",
-    label: "Data Source",
+    path: "/serial-config",
+    label: "Config Setting",
     icon: <ApiOutlined />,
-    children: [
-      {
-        key: "2",
-        path: "/serial-data",
-        label: "Serial Data",
-        icon: <UsbOutlined />,
-      },
-      {
-        key: "3",
-        path: "/http-data",
-        label: "HTTP Data",
-        icon: <GlobalOutlined />,
-      },
-    ],
+    // children: [
+    //   {
+    //     key: "2",
+    //     path: "/serial-data",
+    //     label: "Serial Data",
+    //     icon: <UsbOutlined />,
+    //   },
+    //   {
+    //     key: "3",
+    //     path: "/http-data",
+    //     label: "HTTP Data",
+    //     icon: <GlobalOutlined />,
+    //   },
+    // ],
   },
 ];
 
@@ -147,7 +147,7 @@ const MainLayout = ({ children }) => {
             ...primaryStyle,
           }}
         >
-          Data Visualizer ©{new Date().getFullYear()} Created by{" "}
+          Data Logger ©{new Date().getFullYear()} Created by{" "}
           <a
             href="https://abhisheksharma1310.github.io"
             target="_blank"

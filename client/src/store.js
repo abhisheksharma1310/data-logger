@@ -5,20 +5,23 @@ import { combineReducers } from "redux";
 import { persistStore, persistReducer } from "redux-persist";
 // navDetail reducer
 import navDetailReducer from "./features/navDetail/navDetailSlice";
-// serial data reducer and api query service
-import serialReducer from "./features/serialData/serialSlice";
+// serial config reducer
+import serialConfigReducer from "./features/serialConfig/configSlice";
+// base url reducer
+import baseUrlReducer from "./features/serialConfig/baseUrlSlice";
 
 // Combine your reducers
 const rootReducer = combineReducers({
   navDetail: navDetailReducer,
-  serial: serialReducer,
+  baseUrl: baseUrlReducer,
+  serialConfig: serialConfigReducer,
 });
 
 // Persist configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["navDetail", "serial"], // Add the slices you want to persist
+  whitelist: ["navDetail"], // Add the slices you want to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
