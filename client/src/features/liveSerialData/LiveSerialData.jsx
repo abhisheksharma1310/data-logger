@@ -5,53 +5,51 @@ import {
   addMessage,
   clearMessages,
   setConnectionStatus,
-  setConnectionDetails,
-} from "./socketSlice";
+  checkSerialStatus,
+} from "./liveDataSlice";
 import { Button, Input } from "antd";
 import Scrollable from "../../components/Scrollable";
 import TextArea from "antd/es/input/TextArea";
 import { JsonToTable } from "react-json-to-table";
 
-const SocketIoData = () => {
+const LiveSerialData = () => {
+  const dispatch = useDispatch();
+  const { baseURL } = useSelector((state) => state.baseUrl);
+  const { messages, isConnected, isPortOpen, status, error } = useSelector(
+    (state) => state.liveSerialData
+  );
+  const socketRef = useRef(null);
   const [input, setInput] = useState("");
   const [sentEventName, setSentEventName] = useState("message");
   const [receiveEventName, setReceiveEventName] = useState("message");
-  const [error, setError] = useState(null);
-  const [serverURL, setServerURL] = useState("http://localhost:5000");
-  const socketRef = useRef(null);
-  const dispatch = useDispatch();
-  const { messages, isConnected, connectionDetails } = useSelector(
-    (state) => state.socketIo
-  );
+  const [ioError, setIoError] = useState(null);
+
+  const initSerialPort = () => {
+    dispatch(checkSerialStatus({ baseURL }));
+  };
 
   const handleConnect = () => {
-    if (!serverURL) return;
+    if (!baseURL) return;
+
     if (socketRef.current) socketRef.current.disconnect();
 
-    socketRef.current = io(serverURL, {
+    socketRef.current = io(baseURL, {
       reconnectionAttempts: 5, // Number of reconnection attempts before giving up
       timeout: 10000, // Time before connection attempt times out
     });
     socketRef.current.on("connect", () => {
       dispatch(setConnectionStatus(true));
-      dispatch(
-        setConnectionDetails({
-          id: socketRef.current.id,
-          transport: socketRef.current.io.engine.transport.name,
-        })
-      );
-      setError(null);
+      setIoError(null);
     });
     socketRef.current.on("connect_error", (err) => {
       console.error("Connection Error:", err);
-      setError("Failed to connect to the server. Please try again later.");
+      setIoError("Failed to connect to the server. Please try again later.");
     });
     socketRef.current.on(receiveEventName, (data) => {
       dispatch(addMessage(data));
     });
     socketRef.current.on("disconnect", () => {
       dispatch(setConnectionStatus(false));
-      dispatch(setConnectionDetails({}));
     });
   };
 
@@ -59,7 +57,6 @@ const SocketIoData = () => {
     if (socketRef.current) {
       socketRef.current.disconnect();
       dispatch(setConnectionStatus(false));
-      dispatch(setConnectionDetails({}));
     }
   };
 
@@ -78,45 +75,29 @@ const SocketIoData = () => {
 
   return (
     <div>
-      <div className="input-div">
-        <Input
-          addonBefore="Socket.Io URL"
-          type="text"
-          placeholder="Socket Server URL"
-          value={serverURL}
-          onChange={(e) => setServerURL(e.target.value)}
-          className="input-item"
-        />
-        <Input
-          addonBefore="Sent Event Name"
-          type="text"
-          placeholder="Sent Event Name"
-          value={sentEventName}
-          onChange={(e) => setSentEventName(e.target.value)}
-          className="input-item"
-        />
-        <Input
-          addonBefore="Receive Event Name"
-          type="text"
-          placeholder="Receive Event Name"
-          value={receiveEventName}
-          onChange={(e) => setReceiveEventName(e.target.value)}
-          className="input-item"
-        />
-        <Button
-          type="primary"
-          onClick={isConnected ? handleDisconnect : handleConnect}
-          danger={isConnected}
-        >
-          {isConnected ? "Disconnect" : "Connect"}
+      {status !== "succeeded" && (
+        <Button type="primary" onClick={initSerialPort}>
+          check port status
         </Button>
+      )}
+      {status === "succeeded" && <p>Serial port working fine.</p>}
+      {status === "failed" && <p>{error}</p>}
+      <div className="input-div">
+        {status === "succeeded" && (
+          <Button
+            type="primary"
+            onClick={isConnected ? handleDisconnect : handleConnect}
+            danger={isConnected}
+          >
+            {isConnected ? "Disconnect" : "Connect for real time data"}
+          </Button>
+        )}
       </div>
       <div>
         <h3>
-          Connection Status: {isConnected ? "Connected" : "Disconnected"}
-          {isConnected && <>, Client Id: {connectionDetails?.id}</>}
+          Server Connection Status: {isConnected ? "Connected" : "Disconnected"}
         </h3>
-        {error && <h3>{error.toString()}</h3>}
+        {ioError && <h3>{ioError.toString()}</h3>}
       </div>
       {isConnected && (
         <div className="display-flex g-25">
@@ -160,4 +141,4 @@ const SocketIoData = () => {
   );
 };
 
-export default SocketIoData;
+export default LiveSerialData;

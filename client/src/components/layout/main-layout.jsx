@@ -23,6 +23,12 @@ const menuItems = [
   },
   {
     key: "1",
+    path: "/serial-live",
+    label: "Real Time Data",
+    icon: <HomeOutlined />,
+  },
+  {
+    key: "2",
     path: "/serial-config",
     label: "Config Setting",
     icon: <ApiOutlined />,

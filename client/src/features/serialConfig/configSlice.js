@@ -23,7 +23,6 @@ const serialSlice = createSlice({
       mongoConfig: {
         url: "mongodb://localhost:27017/dataLogger",
       },
-      fileFormat: "text",
       autoLog: true,
       autoDelete: {
         enabled: true,
@@ -37,6 +36,9 @@ const serialSlice = createSlice({
   reducers: {
     setConfig: (state, action) => {
       state.config = action.payload;
+    },
+    setStatus: (state, action) => {
+      state.status = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -57,6 +59,6 @@ const serialSlice = createSlice({
   },
 });
 
-export const { setConfig } = serialSlice.actions;
+export const { setConfig, setStatus } = serialSlice.actions;
 
 export default serialSlice.reducer;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { configureSerial, setConfig } from "./configSlice";
+import { configureSerial, setConfig, setStatus } from "./configSlice";
 import { Button, Form, Input, Space, Switch } from "antd";
 
 const formItemLayout = {
@@ -26,6 +26,7 @@ const ConfigForm = ({ baseURL }) => {
     setTimeout(() => {
       if (deploy) {
         setDeploy(false);
+        dispatch(setStatus("idle"));
       }
     }, 10000);
   };
@@ -39,7 +40,6 @@ const ConfigForm = ({ baseURL }) => {
       mongoConfig: {
         url: values.mongoDbUrl,
       },
-      fileFormat: values.fileFormat || "json",
       autoLog: values.autoLog,
       autoDelete: {
         enabled: values.autoDelete > 0 ? true : false,
@@ -72,7 +72,6 @@ const ConfigForm = ({ baseURL }) => {
           logToFile: config.logToFile,
           logToDatabase: config.logToDatabase,
           autoLog: config.autoLog,
-          fileFormat: config.fileFormat === "text" ? "text" : "json",
           mongoDbUrl: config.mongoConfig.url,
           autoDelete: config.autoDelete.deleteAfterDays,
         }}
@@ -103,15 +102,6 @@ const ConfigForm = ({ baseURL }) => {
             valuePropName="checked"
           >
             <Switch />
-          </Form.Item>
-        )}
-        {autoLog && (
-          <Form.Item
-            name="fileFormat"
-            label="File format"
-            valuePropName="checked"
-          >
-            <Switch checkedChildren="Text" unCheckedChildren="JSON" />
           </Form.Item>
         )}
         <Form.Item name="mongoDbUrl" label="MongoDB URL">

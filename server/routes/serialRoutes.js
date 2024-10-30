@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 const serialRouter = (io) => {
-  router.post("/configure", (req, res) => configure(req, res, io));
-  router.get("/status", checkSerialStatus);
+  router.post("/configure", configure);
+  router.get("/status", (req, res) => checkSerialStatus(req, res, io));
   router.get("/logs/:date", getLogsByDate);
   router.delete("/logs/:date", deleteLogsByDate);
 

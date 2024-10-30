@@ -9,12 +9,15 @@ import navDetailReducer from "./features/navDetail/navDetailSlice";
 import serialConfigReducer from "./features/serialConfig/configSlice";
 // base url reducer
 import baseUrlReducer from "./features/serialConfig/baseUrlSlice";
+// liveSerialData reducer
+import liveSerialDataReducer from "./features/liveSerialData/liveDataSlice";
 
 // Combine your reducers
 const rootReducer = combineReducers({
   navDetail: navDetailReducer,
   baseUrl: baseUrlReducer,
   serialConfig: serialConfigReducer,
+  liveSerialData: liveSerialDataReducer,
 });
 
 // Persist configuration

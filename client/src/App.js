@@ -5,6 +5,7 @@ import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import Home from "./components/Home";
 import SerialConfig from "./features/serialConfig/SerialConfig";
+import LiveSerialData from "./features/liveSerialData/LiveSerialData";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
               <Route exact path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
               <Route path="/serial-config" element={<SerialConfig />} />
+              <Route path="/serial-live" element={<LiveSerialData />} />
             </Routes>
           </MainLayout>
         </ConfigProvider>

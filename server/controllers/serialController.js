@@ -24,6 +24,11 @@ let port;
 let parser;
 let ioGlobal;
 
+// emit function
+const emitIo = (evenName, message) => {
+  if (!!ioGlobal) ioGlobal.emit(evenName, message);
+};
+
 // Load configuration from file
 const loadConfig = () => {
   const configPath = path.join(configDir, "serialLog.config.json");
@@ -60,22 +65,29 @@ const initSerialPort = async (config) => {
     parser.on("data", (data) => {
       try {
         const jsonData = JSON.parse(data);
-        if (!!ioGlobal) ioGlobal.emit("message", jsonData); // Emit JSON data through socket.io
+        emitIo("serial-data-json", jsonData);
       } catch (error) {
         console.error("Non-JSON data received:", error.message);
-        if (!!ioGlobal) ioGlobal.emit("message", data); // Emit raw data through socket.io
+        emitIo("serial-data-raw", data);
       }
+    });
+
+    port.on("open", () => {
+      emitIo("serial-port", "opened");
+    });
+    port.on("close", () => {
+      emitIo("serial-port", "closed");
     });
 
     port.on("error", (err) => {
       console.error(`Error: ${err.message}`);
+      emitIo("error", err.message);
     });
   }
 };
 
 // api function for save configuration file received from client
-export const configure = async (req, res, io) => {
-  ioGlobal = io;
+export const configure = async (req, res) => {
   const { config } = req.body;
 
   try {
@@ -95,14 +107,20 @@ export const configure = async (req, res, io) => {
 };
 
 // api function to initialize or check serial port status
-export const checkSerialStatus = async (req, res) => {
+export const checkSerialStatus = async (req, res, io) => {
+  ioGlobal = io;
   try {
-    // Initialize serial port and parser
-    await initSerialPort(config);
+    if (!port || !port.isOpen) {
+      // Initialize serial port and parser
+      const config = loadConfig();
+      await initSerialPort(config);
+    }
 
-    port.on("open", () => {
+    if (port.isOpen) {
       res.status(200).json({ message: "Port opened successfully" });
-    });
+    } else {
+      res.status(500).json({ message: `Failed to open port` });
+    }
   } catch (error) {
     res.status(500).json({ message: `Failed to open port: ${error.message}` });
   }
@@ -115,20 +133,19 @@ const startLogging = async () => {
 
   await initSerialPort(config);
 
-  const { logToFile, logToDatabase, mongoConfig, fileFormat, autoDelete } =
-    config;
+  const { logToFile, logToDatabase, autoDelete } = config;
 
   parser.on("data", async (data) => {
     const logData = `${new Date().toISOString()} - ${data}\n`;
     const date = new Date().toISOString().split("T")[0];
 
     if (logToFile) {
-      const fileName = path.join(
-        logDir,
-        `${date}.${fileFormat === "text" ? "txt" : "json"}`
-      );
+      const fileName = path.join(logDir, `${date}.txt`);
       fs.appendFile(fileName, logData, (err) => {
-        if (err) console.error("Error logging data to file:", err);
+        if (err) {
+          console.error("Error logging data to file:", err);
+          emitIo("error", `Error logging data to file:, ${err}`);
+        }
       });
     }
 
@@ -138,6 +155,7 @@ const startLogging = async () => {
         await logEntry.save();
       } catch (err) {
         console.error("Error logging data to database:", err);
+        emitIo("error", `Error logging data to database: ${err}`);
       }
     }
   });
@@ -154,20 +172,24 @@ const startLogging = async () => {
       }).exec();
 
       // Delete old log files
-      fs.readdir(logDir, (err, files) => {
-        if (err) throw err;
-        files.forEach((file) => {
-          const filePath = path.join(logDir, file);
-          fs.stat(filePath, (err, stats) => {
-            if (err) throw err;
-            if (new Date(stats.mtime) < deleteDate) {
-              fs.unlink(filePath, (err) => {
-                if (err) throw err;
-              });
-            }
+      try {
+        fs.readdir(logDir, (err, files) => {
+          if (err) throw err;
+          files.forEach((file) => {
+            const filePath = path.join(logDir, file);
+            fs.stat(filePath, (err, stats) => {
+              if (err) throw err;
+              if (new Date(stats.mtime) < deleteDate) {
+                fs.unlink(filePath, (err) => {
+                  if (err) throw err;
+                });
+              }
+            });
           });
         });
-      });
+      } catch (error) {
+        emitIo("error", `Error: delete old files `);
+      }
     }, 24 * 60 * 60 * 1000); // Check every 24 hours
   }
 };
