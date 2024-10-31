@@ -24,6 +24,23 @@ let port;
 let parser;
 let ioGlobal;
 
+// listen for socket.io client
+export const initSocketIo = (io) => {
+  if (!!io) {
+    ioGlobal = io;
+    io.on("connection", (socket) => {
+      console.log("a user connected");
+      socket.on("message", (msg) => {
+        console.log("message: " + msg);
+        io.emit("message", msg);
+      });
+      socket.on("disconnect", () => {
+        console.log("user disconnected");
+      });
+    });
+  }
+};
+
 // emit function
 const emitIo = (evenName, message) => {
   if (!!ioGlobal) ioGlobal.emit(evenName, message);
@@ -52,6 +69,7 @@ const initMongoDB = (url) => {
     })
     .catch((err) => {
       console.error("Error connecting to MongoDB:", err);
+      emitIo("error", `Error connecting to MongoDB: , ${err}`);
     });
 };
 
@@ -73,9 +91,11 @@ const initSerialPort = async (config) => {
     });
 
     port.on("open", () => {
+      console.log("Serial port opened.");
       emitIo("serial-port", "opened");
     });
     port.on("close", () => {
+      console.log("Serial port closed.");
       emitIo("serial-port", "closed");
     });
 
@@ -86,46 +106,6 @@ const initSerialPort = async (config) => {
   }
 };
 
-// api function for save configuration file received from client
-export const configure = async (req, res) => {
-  const { config } = req.body;
-
-  try {
-    // Save configuration to file
-    const configPath = path.join(configDir, "serialLog.config.json");
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-
-    res.status(200).json({
-      message: `Deployed successfully at ${new Date()}`,
-      config: config,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: `Failed to deploy configuration: ${error.message}` });
-  }
-};
-
-// api function to initialize or check serial port status
-export const checkSerialStatus = async (req, res, io) => {
-  ioGlobal = io;
-  try {
-    if (!port || !port.isOpen) {
-      // Initialize serial port and parser
-      const config = loadConfig();
-      await initSerialPort(config);
-    }
-
-    if (port.isOpen) {
-      res.status(200).json({ message: "Port opened successfully" });
-    } else {
-      res.status(500).json({ message: `Failed to open port` });
-    }
-  } catch (error) {
-    res.status(500).json({ message: `Failed to open port: ${error.message}` });
-  }
-};
-
 // function to start auto logging based on saved config file
 const startLogging = async () => {
   const config = loadConfig();
@@ -133,32 +113,34 @@ const startLogging = async () => {
 
   await initSerialPort(config);
 
-  const { logToFile, logToDatabase, autoDelete } = config;
+  const { autoLog, logToFile, logToDatabase, autoDelete } = config;
 
-  parser.on("data", async (data) => {
-    const logData = `${new Date().toISOString()} - ${data}\n`;
-    const date = new Date().toISOString().split("T")[0];
+  if (autoLog) {
+    parser.on("data", async (data) => {
+      const logData = `${new Date().toISOString()} - ${data}\n`;
+      const date = new Date().toISOString().split("T")[0];
 
-    if (logToFile) {
-      const fileName = path.join(logDir, `${date}.txt`);
-      fs.appendFile(fileName, logData, (err) => {
-        if (err) {
-          console.error("Error logging data to file:", err);
-          emitIo("error", `Error logging data to file:, ${err}`);
-        }
-      });
-    }
-
-    if (logToDatabase) {
-      const logEntry = new Log({ data, timestamp: new Date() });
-      try {
-        await logEntry.save();
-      } catch (err) {
-        console.error("Error logging data to database:", err);
-        emitIo("error", `Error logging data to database: ${err}`);
+      if (logToFile) {
+        const fileName = path.join(logDir, `${date}.txt`);
+        fs.appendFile(fileName, logData, (err) => {
+          if (err) {
+            console.error("Error logging data to file:", err);
+            emitIo("error", `Error logging data to file:, ${err}`);
+          }
+        });
       }
-    }
-  });
+
+      if (logToDatabase) {
+        const logEntry = new Log({ data, timestamp: new Date() });
+        try {
+          await logEntry.save();
+        } catch (err) {
+          console.error("Error logging data to database:", err);
+          emitIo("error", `Error logging data to database: ${err}`);
+        }
+      }
+    });
+  }
 
   // Schedule auto-delete if enabled
   if (autoDelete && autoDelete.enabled) {
@@ -201,7 +183,7 @@ const initializeLogging = async () => {
     // call function to initialize mongo DB
     initMongoDB(config.mongoConfig.url);
   }
-  if (config && config.autoLog) {
+  if (config) {
     // call function to start logging
     await startLogging();
   }
@@ -209,6 +191,46 @@ const initializeLogging = async () => {
 
 // call function to initialize serial data logging
 initializeLogging();
+
+// api function for save configuration file received from client
+export const configure = async (req, res) => {
+  const { config } = req.body;
+
+  try {
+    // Save configuration to file
+    const configPath = path.join(configDir, "serialLog.config.json");
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+
+    res.status(200).json({
+      message: `Deployed successfully at ${new Date()}`,
+      config: config,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Failed to deploy configuration: ${error.message}` });
+    emitIo("error", `Failed to deploy configuration: ${error.message}`);
+  }
+};
+
+// api function to initialize or check serial port status
+export const checkSerialStatus = async (req, res) => {
+  try {
+    if (!port || !port.isOpen) {
+      // Initialize serial port and parser
+      const config = loadConfig();
+      await initSerialPort(config);
+    }
+
+    if (port.isOpen) {
+      res.status(200).json({ message: "Port opened successfully" });
+    } else {
+      res.status(500).json({ message: `Failed to open port` });
+    }
+  } catch (error) {
+    res.status(500).json({ message: `Failed to open port: ${error.message}` });
+  }
+};
 
 // api function for send logs for requested date
 export const getLogsByDate = async (req, res) => {
