@@ -17,6 +17,7 @@ const liveDataSlice = createSlice({
     isConnected: false,
     isPortOpen: false,
     status: "idle",
+    serverErrors: [],
     error: null,
   },
   reducers: {
@@ -28,6 +29,12 @@ const liveDataSlice = createSlice({
     },
     setConnectionStatus: (state, action) => {
       state.isConnected = action.payload;
+    },
+    setPortStatus: (state, action) => {
+      state.isPortOpen = action.payload;
+    },
+    setServerError: (state, action) => {
+      state.serverErrors = [action.payload, ...state.serverErrors];
     },
   },
   extraReducers: (builder) => {
@@ -41,12 +48,18 @@ const liveDataSlice = createSlice({
       })
       .addCase(checkSerialStatus.rejected, (state, action) => {
         state.status = "failed";
+        state.isPortOpen = false;
         state.error = action.error.message;
       });
   },
 });
 
-export const { addMessage, clearMessages, setConnectionStatus } =
-  liveDataSlice.actions;
+export const {
+  addMessage,
+  clearMessages,
+  setConnectionStatus,
+  setPortStatus,
+  setServerError,
+} = liveDataSlice.actions;
 
 export default liveDataSlice.reducer;

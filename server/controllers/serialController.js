@@ -92,11 +92,11 @@ const initSerialPort = async (config) => {
 
     port.on("open", () => {
       console.log("Serial port opened.");
-      emitIo("serial-port", "opened");
+      emitIo("serial-port", true);
     });
     port.on("close", () => {
       console.log("Serial port closed.");
-      emitIo("serial-port", "closed");
+      emitIo("serial-port", false);
     });
 
     port.on("error", (err) => {
@@ -223,12 +223,15 @@ export const checkSerialStatus = async (req, res) => {
     }
 
     if (port.isOpen) {
-      res.status(200).json({ message: "Port opened successfully" });
+      res.status(200).json({ message: true });
     } else {
-      res.status(500).json({ message: `Failed to open port` });
+      res
+        .status(500)
+        .json({ message: `Failed to open port: ${error.message}` });
     }
   } catch (error) {
     res.status(500).json({ message: `Failed to open port: ${error.message}` });
+    emitIo("error", `Failed to open port: ${error.message}`);
   }
 };
 

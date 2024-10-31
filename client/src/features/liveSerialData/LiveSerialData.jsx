@@ -5,6 +5,8 @@ import {
   addMessage,
   clearMessages,
   setConnectionStatus,
+  setPortStatus,
+  setServerError,
   checkSerialStatus,
 } from "./liveDataSlice";
 import { Button, Input } from "antd";
@@ -15,13 +17,10 @@ import { JsonToTable } from "react-json-to-table";
 const LiveSerialData = () => {
   const dispatch = useDispatch();
   const { baseURL } = useSelector((state) => state.baseUrl);
-  const { messages, isConnected, isPortOpen, status, error } = useSelector(
-    (state) => state.liveSerialData
-  );
+  const { messages, isConnected, isPortOpen, status, serverErrors, error } =
+    useSelector((state) => state.liveSerialData);
   const socketRef = useRef(null);
   const [input, setInput] = useState("");
-  const [sentEventName, setSentEventName] = useState("message");
-  const [receiveEventName, setReceiveEventName] = useState("message");
   const [ioError, setIoError] = useState(null);
 
   const initSerialPort = () => {
@@ -37,19 +36,35 @@ const LiveSerialData = () => {
       reconnectionAttempts: 5, // Number of reconnection attempts before giving up
       timeout: 10000, // Time before connection attempt times out
     });
+    // on connect
     socketRef.current.on("connect", () => {
       dispatch(setConnectionStatus(true));
       setIoError(null);
     });
+    // listen for serial port status
+    socketRef.current.on("serial-port", (data) => {
+      dispatch(setPortStatus(data));
+    });
+    // listen for serial data json
+    socketRef.current.on("serial-data-json", (data) => {
+      dispatch(addMessage(data));
+    });
+    // listen for serial data raw
+    socketRef.current.on("serial-data-raw", (data) => {
+      dispatch(addMessage(data));
+    });
+    // listen for server error
+    socketRef.current.on("error", (data) => {
+      dispatch(setServerError(data));
+    });
+    // on disconnect
+    socketRef.current.on("disconnect", () => {
+      dispatch(setConnectionStatus(false));
+    });
+    // on conncection error
     socketRef.current.on("connect_error", (err) => {
       console.error("Connection Error:", err);
       setIoError("Failed to connect to the server. Please try again later.");
-    });
-    socketRef.current.on(receiveEventName, (data) => {
-      dispatch(addMessage(data));
-    });
-    socketRef.current.on("disconnect", () => {
-      dispatch(setConnectionStatus(false));
     });
   };
 
@@ -62,7 +77,7 @@ const LiveSerialData = () => {
 
   const sendMessage = () => {
     if (socketRef.current) {
-      socketRef.current.emit(sentEventName, input);
+      socketRef.current.emit("serial-data-write", input);
       setInput("");
     }
   };
@@ -97,9 +112,10 @@ const LiveSerialData = () => {
         <h3>
           Server Connection Status: {isConnected ? "Connected" : "Disconnected"}
         </h3>
+        <h3>Port Connection Status: {isPortOpen ? "opened" : "closed"}</h3>
         {ioError && <h3>{ioError.toString()}</h3>}
       </div>
-      {isConnected && (
+      {isConnected && isPortOpen && (
         <div className="display-flex g-25">
           <div className="max-width">
             <div className="display-flex">
