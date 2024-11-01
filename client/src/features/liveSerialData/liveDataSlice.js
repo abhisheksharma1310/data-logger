@@ -2,10 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Define async thunks for API calls
-export const checkSerialStatus = createAsyncThunk(
-  "serial/portStatus",
+export const todayLogs = createAsyncThunk(
+  "serial/todayLogs",
   async ({ baseURL }) => {
-    const response = await axios.get(`${baseURL}/serial/status`);
+    const response = await axios.get(`${baseURL}/serial/todayLogs`);
     return response.data;
   }
 );
@@ -39,16 +39,15 @@ const liveDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(checkSerialStatus.pending, (state) => {
+      .addCase(todayLogs.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(checkSerialStatus.fulfilled, (state, action) => {
+      .addCase(todayLogs.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.isPortOpen = action.payload.message;
+        state.messages = action.payload;
       })
-      .addCase(checkSerialStatus.rejected, (state, action) => {
+      .addCase(todayLogs.rejected, (state, action) => {
         state.status = "failed";
-        state.isPortOpen = false;
         state.error = action.error.message;
       });
   },

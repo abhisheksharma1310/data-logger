@@ -7,7 +7,7 @@ import {
   setConnectionStatus,
   setPortStatus,
   setServerError,
-  checkSerialStatus,
+  todayLogs,
 } from "./liveDataSlice";
 import { Button, Input } from "antd";
 import Scrollable from "../../components/Scrollable";
@@ -23,8 +23,8 @@ const LiveSerialData = () => {
   const [input, setInput] = useState("");
   const [ioError, setIoError] = useState(null);
 
-  const initSerialPort = () => {
-    dispatch(checkSerialStatus({ baseURL }));
+  const retriveTodayLogs = () => {
+    dispatch(todayLogs({ baseURL }));
   };
 
   const handleConnect = () => {
@@ -83,31 +83,15 @@ const LiveSerialData = () => {
   };
 
   useEffect(() => {
+    handleConnect();
+
     return () => {
       handleDisconnect();
     };
-  }, []);
+  }, [baseURL]);
 
   return (
     <div>
-      {status !== "succeeded" && (
-        <Button type="primary" onClick={initSerialPort}>
-          check port status
-        </Button>
-      )}
-      {status === "succeeded" && <p>Serial port working fine.</p>}
-      {status === "failed" && <p>{error}</p>}
-      <div className="input-div">
-        {status === "succeeded" && (
-          <Button
-            type="primary"
-            onClick={isConnected ? handleDisconnect : handleConnect}
-            danger={isConnected}
-          >
-            {isConnected ? "Disconnect" : "Connect for real time data"}
-          </Button>
-        )}
-      </div>
       <div>
         <h3>
           Server Connection Status: {isConnected ? "Connected" : "Disconnected"}
@@ -119,14 +103,17 @@ const LiveSerialData = () => {
         <div className="display-flex g-25">
           <div className="max-width">
             <div className="display-flex">
-              <h3>Received Messages:</h3>
+              <h3>Received data:</h3>
+              <Button type="primary" onClick={retriveTodayLogs}>
+                Sync
+              </Button>
               {messages[0] && (
                 <Button
                   type="primary"
                   danger
                   onClick={() => dispatch(clearMessages())}
                 >
-                  Clear Message
+                  Clear data
                 </Button>
               )}
             </div>
@@ -135,7 +122,7 @@ const LiveSerialData = () => {
             </Scrollable>
           </div>
           <div className="input-item">
-            <h3>Send Message</h3>
+            <h3>Send data</h3>
             <TextArea
               value={input}
               onChange={(e) => setInput(e.target.value)}

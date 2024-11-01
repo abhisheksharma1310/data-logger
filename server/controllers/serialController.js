@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { SerialPort } from "serialport";
-import { ReadlineParser } from "serialport";
+import { SerialPort, ReadlineParser } from "serialport";
 import Log from "../models/logModel.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { resolveSoa } from "dns";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +20,7 @@ if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir);
 }
 
+// global variables
 let port;
 let parser;
 let ioGlobal;
@@ -30,10 +31,13 @@ export const initSocketIo = (io) => {
     ioGlobal = io;
     io.on("connection", (socket) => {
       console.log("a user connected");
+      // listen message event and reply same msg
       socket.on("message", (msg) => {
         console.log("message: " + msg);
         io.emit("message", msg);
       });
+      // emit port status
+      if (port) emitIo("serial-port", port.isOpen);
       socket.on("disconnect", () => {
         console.log("user disconnected");
       });
@@ -56,14 +60,11 @@ const loadConfig = () => {
   return null;
 };
 
-// initialize databse using save config
+// initialize databse using saved config
 const initMongoDB = (url) => {
   // Connect to MongoDB
   mongoose
-    .connect(url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
+    .connect(url)
     .then(() => {
       console.log("Connected to MongoDB");
     })
@@ -72,11 +73,12 @@ const initMongoDB = (url) => {
       emitIo("error", `Error connecting to MongoDB: , ${err}`);
     });
 };
-
-// initialize serial port based on given configuration
+// initialize serial port
 const initSerialPort = async (config) => {
   const { comport, baudrate } = config;
-  if (!port || !port.isOpen) {
+  let deviceRemoved = false;
+
+  const openPort = () => {
     port = new SerialPort({ path: comport, baudRate: Number(baudrate) });
     parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
@@ -93,17 +95,42 @@ const initSerialPort = async (config) => {
     port.on("open", () => {
       console.log("Serial port opened.");
       emitIo("serial-port", true);
+
+      if (deviceRemoved) {
+        console.log("Device reinserted into the serial port.");
+        emitIo("serial-port", true);
+        deviceRemoved = false; // Reset flag
+      }
     });
+
     port.on("close", () => {
       console.log("Serial port closed.");
       emitIo("serial-port", false);
+      deviceRemoved = true; // Set flag for device removal
     });
 
     port.on("error", (err) => {
       console.error(`Error: ${err.message}`);
       emitIo("error", err.message);
     });
-  }
+  };
+
+  openPort();
+
+  // Periodically check if the device is reinserted
+  setInterval(async () => {
+    try {
+      const ports = await SerialPort.list();
+      const portExists = ports.some((p) => p.path === comport);
+
+      if (portExists && deviceRemoved) {
+        console.log("Device detected on port.");
+        openPort(); // Reopen the port
+      }
+    } catch (err) {
+      console.error("Error checking ports:", err);
+    }
+  }, 5000); // Check every 5 seconds
 };
 
 // function to start auto logging based on saved config file
@@ -115,12 +142,21 @@ const startLogging = async () => {
 
   const { autoLog, logToFile, logToDatabase, autoDelete } = config;
 
-  if (autoLog) {
+  try {
     parser.on("data", async (data) => {
       const logData = `${new Date().toISOString()} - ${data}\n`;
       const date = new Date().toISOString().split("T")[0];
 
-      if (logToFile) {
+      // today logs
+      const fileName = path.join(logDir, `todayLog.txt`);
+      fs.appendFile(fileName, logData, (err) => {
+        if (err) {
+          console.error("Error logging data to file:", err);
+          emitIo("error", `Error logging data to file:, ${err}`);
+        }
+      });
+      // logs to file
+      if (autoLog && logToFile) {
         const fileName = path.join(logDir, `${date}.txt`);
         fs.appendFile(fileName, logData, (err) => {
           if (err) {
@@ -129,8 +165,8 @@ const startLogging = async () => {
           }
         });
       }
-
-      if (logToDatabase) {
+      //logs to database
+      if (autoLog && logToDatabase) {
         const logEntry = new Log({ data, timestamp: new Date() });
         try {
           await logEntry.save();
@@ -140,6 +176,8 @@ const startLogging = async () => {
         }
       }
     });
+  } catch (error) {
+    emitIo("error", `Eror data logging: ${error}`);
   }
 
   // Schedule auto-delete if enabled
@@ -238,14 +276,59 @@ export const checkSerialStatus = async (req, res) => {
 // api function for send logs for requested date
 export const getLogsByDate = async (req, res) => {
   const { date } = req.params;
+
   try {
-    const logs = await Log.find({
+    // Fetch logs from the database
+    const dbLogs = await Log.find({
       timestamp: {
         $gte: new Date(`${date}T00:00:00.000Z`),
         $lt: new Date(`${date}T23:59:59.999Z`),
       },
     });
-    res.status(200).json(logs);
+
+    // Fetch logs from the log file
+    const logFilePath = path.join(logDir, `${date}.txt`);
+    let fileLogs = [];
+
+    if (fs.existsSync(logFilePath)) {
+      const fileContent = fs.readFileSync(logFilePath, "utf8");
+      fileLogs = fileContent
+        .split("\n")
+        .filter((log) => log)
+        .map((log) => {
+          const [timestamp, ...data] = log.split(" - ");
+          return { timestamp, data: data.join(" - ") };
+        });
+    }
+
+    // Combine logs from both sources
+    const combinedLogs = { file: fileLogs, db: dbLogs };
+
+    res.status(200).json(combinedLogs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// api function to retrive only today logs
+export const todayLogs = async (req, res) => {
+  try {
+    // Fetch logs from the log file
+    const logFilePath = path.join(logDir, `todayLog.txt`);
+    let fileLogs = [];
+
+    if (fs.existsSync(logFilePath)) {
+      const fileContent = fs.readFileSync(logFilePath, "utf8");
+      fileLogs = fileContent
+        .split("\n")
+        .filter((log) => log)
+        .map((log) => {
+          const [timestamp, ...data] = log.split(" - ");
+          return { data: JSON.parse(data), time: timestamp };
+        });
+    }
+
+    res.status(200).json(fileLogs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
