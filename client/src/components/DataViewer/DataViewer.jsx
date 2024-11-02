@@ -52,7 +52,7 @@ const localTime = (timestamp) => {
   return utcDate.toLocaleString();
 };
 
-const JsonTable = ({ serialData }) => {
+const DataViewer = ({ serialData }) => {
   const [dataType, setDataType] = useState("json");
   const [viewType, setViewType] = useState("table");
   const [showTime, setShowTime] = useState("yes");
@@ -119,8 +119,8 @@ const JsonTable = ({ serialData }) => {
   );
 };
 
-JsonTable.propTypes = {
+DataViewer.propTypes = {
   jsonData: PropTypes.any.isRequired,
 };
 
-export default JsonTable;
+export default DataViewer;

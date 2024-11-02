@@ -13,7 +13,7 @@ import { Button, Input } from "antd";
 import Scrollable from "../../components/Scrollable";
 import TextArea from "antd/es/input/TextArea";
 import { JsonToTable } from "react-json-to-table";
-import JsonTable from "../../components/JsonTable/JsonTable";
+import DataViewer from "../../components/DataViewer/DataViewer";
 
 const LiveSerialData = () => {
   const dispatch = useDispatch();
@@ -118,7 +118,7 @@ const LiveSerialData = () => {
                 </Button>
               )}
             </div>
-            <JsonTable serialData={messages} />
+            <DataViewer serialData={messages} />
           </div>
           <div className="input-item">
             <h3>Send data</h3>
