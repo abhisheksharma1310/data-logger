@@ -24,6 +24,7 @@ if (!fs.existsSync(configDir)) {
 let port;
 let parser;
 let ioGlobal;
+let deviceRemoved = false;
 
 // listen for socket.io client
 export const initSocketIo = (io) => {
@@ -76,61 +77,34 @@ const initMongoDB = (url) => {
 // initialize serial port
 const initSerialPort = async (config) => {
   const { comport, baudrate } = config;
-  let deviceRemoved = false;
 
-  const openPort = () => {
-    port = new SerialPort({ path: comport, baudRate: Number(baudrate) });
-    parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+  port = new SerialPort({ path: comport, baudRate: Number(baudrate) });
+  parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
-    parser.on("data", (data) => {
-      try {
-        const jsonData = JSON.parse(data);
-        emitIo("serial-data-json", jsonData);
-      } catch (error) {
-        console.error("Non-JSON data received:", error.message);
-        emitIo("serial-data-raw", data);
-      }
-    });
+  parser.on("data", (data) => {
+    emitIo("serial-data-json", { timestamp: new Date(), data });
+  });
 
-    port.on("open", () => {
-      console.log("Serial port opened.");
-      emitIo("serial-port", true);
+  port.on("open", () => {
+    console.log("Serial port opened.");
+    emitIo("serial-port", true);
 
-      if (deviceRemoved) {
-        console.log("Device reinserted into the serial port.");
-        emitIo("serial-port", true);
-        deviceRemoved = false; // Reset flag
-      }
-    });
-
-    port.on("close", () => {
-      console.log("Serial port closed.");
-      emitIo("serial-port", false);
-      deviceRemoved = true; // Set flag for device removal
-    });
-
-    port.on("error", (err) => {
-      console.error(`Error: ${err.message}`);
-      emitIo("error", err.message);
-    });
-  };
-
-  openPort();
-
-  // Periodically check if the device is reinserted
-  setInterval(async () => {
-    try {
-      const ports = await SerialPort.list();
-      const portExists = ports.some((p) => p.path === comport);
-
-      if (portExists && deviceRemoved) {
-        console.log("Device detected on port.");
-        openPort(); // Reopen the port
-      }
-    } catch (err) {
-      console.error("Error checking ports:", err);
+    if (deviceRemoved) {
+      console.log("Device reinserted into the serial port.");
+      deviceRemoved = false; // Reset flag
     }
-  }, 5000); // Check every 5 seconds
+  });
+
+  port.on("close", () => {
+    console.log("Serial port closed.");
+    emitIo("serial-port", false);
+    deviceRemoved = true; // Set flag for device removal
+  });
+
+  port.on("error", (err) => {
+    console.error(`Error: ${err.message}`);
+    emitIo("error", err.message);
+  });
 };
 
 // function to start auto logging based on saved config file
@@ -214,6 +188,25 @@ const startLogging = async () => {
   }
 };
 
+// monitor serial port
+const monitorSerialPort = (config) => {
+  const { comport } = config;
+  // Periodically check if the device is reinserted
+  setInterval(async () => {
+    try {
+      const ports = await SerialPort.list();
+      const portExists = ports.some((p) => p.path === comport);
+
+      if (portExists && (!port || deviceRemoved || !port?.isOpen)) {
+        console.log("Device detected on port.");
+        await startLogging(); // Restart logging
+      }
+    } catch (err) {
+      console.error("Error checking ports:", err);
+    }
+  }, 5000); // Check every 5 seconds
+};
+
 // Initialize logging on application start if autoLog is enabled
 const initializeLogging = async () => {
   const config = loadConfig();
@@ -222,8 +215,9 @@ const initializeLogging = async () => {
     initMongoDB(config.mongoConfig.url);
   }
   if (config) {
-    // call function to start logging
-    await startLogging();
+    // call function to start logging and monitor serial port
+
+    monitorSerialPort(config);
   }
 };
 
@@ -324,7 +318,7 @@ export const todayLogs = async (req, res) => {
         .filter((log) => log)
         .map((log) => {
           const [timestamp, ...data] = log.split(" - ");
-          return { data: JSON.parse(data), time: timestamp };
+          return { timestamp, data: data.join(" - ") };
         });
     }
 

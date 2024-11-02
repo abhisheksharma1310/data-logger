@@ -13,6 +13,7 @@ import { Button, Input } from "antd";
 import Scrollable from "../../components/Scrollable";
 import TextArea from "antd/es/input/TextArea";
 import { JsonToTable } from "react-json-to-table";
+import JsonTable from "../../components/JsonTable/JsonTable";
 
 const LiveSerialData = () => {
   const dispatch = useDispatch();
@@ -117,9 +118,7 @@ const LiveSerialData = () => {
                 </Button>
               )}
             </div>
-            <Scrollable height="360px">
-              <JsonToTable json={messages} />
-            </Scrollable>
+            <JsonTable serialData={messages} />
           </div>
           <div className="input-item">
             <h3>Send data</h3>
