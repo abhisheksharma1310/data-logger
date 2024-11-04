@@ -123,9 +123,10 @@ const MainLayout = ({ children }) => {
         <Header
           style={{
             textAlign: "center",
-            height: "80px",
+            fontSize: "12px",
+            height: "70px",
             ...primaryStyle,
-            margin: 0,
+            margin: "-30px",
             padding: 0,
           }}
         >
@@ -133,7 +134,7 @@ const MainLayout = ({ children }) => {
         </Header>
         <Content
           style={{
-            margin: "0",
+            marginButtom: "100px",
           }}
         >
           <div
@@ -143,24 +144,28 @@ const MainLayout = ({ children }) => {
               minHeight: "100%",
             }}
           >
-            <Scrollable height="200px">{children}</Scrollable>
+            <Scrollable height="100px">{children}</Scrollable>
           </div>
         </Content>
         <Footer
           style={{
-            height: "50px",
+            height: "30px",
             textAlign: "center",
+            margin: "0",
+            padding: "0",
             ...primaryStyle,
           }}
         >
-          Data Logger ©{new Date().getFullYear()} Created by{" "}
-          <a
-            href="https://abhisheksharma1310.github.io"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Abhishek Sharma
-          </a>
+          <p style={{ marginTop: "2px" }}>
+            Data Logger ©{new Date().getFullYear()} Created by{" "}
+            <a
+              href="https://abhisheksharma1310.github.io"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abhishek Sharma
+            </a>
+          </p>
         </Footer>
       </Layout>
     </Layout>

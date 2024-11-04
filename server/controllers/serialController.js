@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import { SerialPort, ReadlineParser } from "serialport";
 import Log from "../models/logModel.js";
+import { updateIndexes, getLatestIndexes } from "../utils/indexLogs.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { resolveSoa } from "dns";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,7 +82,7 @@ const initSerialPort = async (config) => {
   parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
   parser.on("data", (data) => {
-    emitIo("serial-data-json", { timestamp: new Date(), data });
+    emitIo("serial-data", { timestamp: new Date(), data });
   });
 
   port.on("open", () => {
@@ -350,4 +350,15 @@ export const deleteLogsByDate = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+// function for building logs index
+export const updateLogIndexes = async (req, res) => {
+  const indexes = await updateIndexes();
+  res.status(200).json(indexes);
+};
+// api call for return logs index
+export const getLogIndexes = (req, res) => {
+  const indexes = getLatestIndexes();
+  res.status(200).json(indexes);
 };

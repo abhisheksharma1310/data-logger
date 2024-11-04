@@ -1,79 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import io from "socket.io-client";
-import {
-  addMessage,
-  clearMessages,
-  setConnectionStatus,
-  setPortStatus,
-  setServerError,
-  todayLogs,
-} from "./liveDataSlice";
-import { Button, Input } from "antd";
-import Scrollable from "../../components/Scrollable";
+import { clearMessages, todayLogs } from "./liveDataSlice";
+import { Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { JsonToTable } from "react-json-to-table";
 import DataViewer from "../../components/DataViewer/DataViewer";
 
-const LiveSerialData = () => {
+const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
   const dispatch = useDispatch();
-  const { baseURL } = useSelector((state) => state.baseUrl);
   const { messages, isConnected, isPortOpen, status, serverErrors, error } =
     useSelector((state) => state.liveSerialData);
-  const socketRef = useRef(null);
   const [input, setInput] = useState("");
-  const [ioError, setIoError] = useState(null);
 
   const retriveTodayLogs = () => {
     dispatch(todayLogs({ baseURL }));
-  };
-
-  const handleConnect = () => {
-    if (!baseURL) return;
-
-    if (socketRef.current) socketRef.current.disconnect();
-
-    socketRef.current = io(baseURL, {
-      reconnectionAttempts: 5, // Number of reconnection attempts before giving up
-      timeout: 10000, // Time before connection attempt times out
-    });
-    // on connect
-    socketRef.current.on("connect", () => {
-      dispatch(setConnectionStatus(true));
-      setIoError(null);
-    });
-    // listen for serial port status
-    socketRef.current.on("serial-port", (data) => {
-      dispatch(setPortStatus(data));
-    });
-    // listen for serial data json
-    socketRef.current.on("serial-data-json", (data) => {
-      dispatch(addMessage(data));
-    });
-    // listen for serial data raw
-    socketRef.current.on("serial-data-raw", (data) => {
-      dispatch(addMessage(data));
-    });
-    // listen for server error
-    socketRef.current.on("error", (data) => {
-      dispatch(setServerError(data));
-    });
-    // on disconnect
-    socketRef.current.on("disconnect", () => {
-      dispatch(setConnectionStatus(false));
-    });
-    // on conncection error
-    socketRef.current.on("connect_error", (err) => {
-      console.error("Connection Error:", err);
-      setIoError("Failed to connect to the server. Please try again later.");
-    });
-  };
-
-  const handleDisconnect = () => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      dispatch(setConnectionStatus(false));
-    }
   };
 
   const sendMessage = () => {
@@ -82,14 +21,6 @@ const LiveSerialData = () => {
       setInput("");
     }
   };
-
-  useEffect(() => {
-    handleConnect();
-
-    return () => {
-      handleDisconnect();
-    };
-  }, [baseURL]);
 
   return (
     <div>

@@ -5,6 +5,8 @@ import {
   getLogsByDate,
   todayLogs,
   deleteLogsByDate,
+  updateLogIndexes,
+  getLogIndexes,
   initSocketIo,
 } from "../controllers/serialController.js";
 
@@ -16,6 +18,8 @@ const serialRouter = (io) => {
   router.get("/todayLogs", todayLogs);
   router.get("/logs/:date", getLogsByDate);
   router.delete("/logs/:date", deleteLogsByDate);
+  router.post("/logsUpdateIndexes", updateLogIndexes);
+  router.get("/logsIndexes", getLogIndexes);
   initSocketIo(io);
 
   return router;

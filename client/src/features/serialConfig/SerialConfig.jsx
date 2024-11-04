@@ -34,7 +34,7 @@ const SerialConfig = () => {
   };
 
   return (
-    <div>
+    <div style={{ marginTop: "20px" }}>
       <Form
         name="Set BaseUrl"
         {...formItemLayout}
