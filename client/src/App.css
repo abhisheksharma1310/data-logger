@@ -1,8 +1,9 @@
 .input-div {
   margin-bottom: 16px;
   display: flex;
+  jsutify-content: center;
+  align-items: center;
   gap: 10px;
-  flex-direction: row;
   flex-wrap: wrap;
 }
 

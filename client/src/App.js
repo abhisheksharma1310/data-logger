@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ConfigProvider, theme } from "antd";
 import MainLayout from "./components/layout/main-layout";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import {
@@ -14,6 +14,8 @@ import "./App.css";
 import Home from "./components/Home";
 import SerialConfig from "./features/serialConfig/SerialConfig";
 import LiveSerialData from "./features/liveSerialData/LiveSerialData";
+import LogsHistory from "./features/logsHistory/LogsHistory";
+import ShowLogsData from "./features/ShowLogsData/ShowLogsData";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -101,6 +103,10 @@ export default function App() {
                     socketRef={socketRef}
                   />
                 }
+              />
+              <Route
+                path="/logs-history"
+                element={<LogsHistory baseURL={baseURL} />}
               />
             </Routes>
           </MainLayout>

@@ -11,6 +11,10 @@ import serialConfigReducer from "./features/serialConfig/configSlice";
 import baseUrlReducer from "./features/serialConfig/baseUrlSlice";
 // liveSerialData reducer
 import liveSerialDataReducer from "./features/liveSerialData/liveDataSlice";
+// logsHistory reducer
+import logsHistoryReducer from "./features/logsHistory/logsHistorySlice";
+// logs reducer
+import logsReducer from "./features/ShowLogsData/showLogsDataSlice";
 
 // Combine your reducers
 const rootReducer = combineReducers({
@@ -18,13 +22,15 @@ const rootReducer = combineReducers({
   baseUrl: baseUrlReducer,
   serialConfig: serialConfigReducer,
   liveSerialData: liveSerialDataReducer,
+  logsHistory: logsHistoryReducer,
+  logs: logsReducer,
 });
 
 // Persist configuration
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["navDetail"], // Add the slices you want to persist
+  whitelist: ["navDetail", "logsHistory"], // Add the slices you want to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

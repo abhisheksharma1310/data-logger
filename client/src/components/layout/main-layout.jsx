@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setNavDetail } from "../../features/navDetail/navDetailSlice";
 import {
@@ -29,6 +29,12 @@ const menuItems = [
   },
   {
     key: "2",
+    path: "/logs-history",
+    label: "Logs History",
+    icon: <HomeOutlined />,
+  },
+  {
+    key: "3",
     path: "/serial-config",
     label: "Config Setting",
     icon: <ApiOutlined />,
@@ -126,20 +132,16 @@ const MainLayout = ({ children }) => {
             fontSize: "12px",
             height: "70px",
             ...primaryStyle,
-            margin: "-30px",
-            padding: 0,
+            marginTop: "-30px",
+            padding: "0",
           }}
         >
           <h1>{header}</h1>
         </Header>
-        <Content
-          style={{
-            marginButtom: "100px",
-          }}
-        >
+        <Content>
           <div
             style={{
-              padding: "25px",
+              padding: "0 25px",
               minWidth: "100%",
               minHeight: "100%",
             }}
