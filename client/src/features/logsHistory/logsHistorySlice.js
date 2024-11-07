@@ -26,6 +26,26 @@ export const deleteLogsByDate = createAsyncThunk(
   }
 );
 
+const formatDate = (dateObj) => {
+  return dateObj.toISOString().split("T")[0].replace(/-/g, "/");
+};
+
+const dateRange = (logsHistory) => {
+  const dbDateObj = logsHistory.dbLogsIndex.map((date) => new Date(date));
+  const fileDateObj = logsHistory.fileLogsIndex.map((date) => new Date(date));
+  const date = {
+    db: {
+      startDate: formatDate(new Date(Math.min(...dbDateObj))),
+      endDate: formatDate(new Date(Math.max(...dbDateObj))),
+    },
+    file: {
+      startDate: formatDate(new Date(Math.min(...fileDateObj))),
+      endDate: formatDate(new Date(Math.max(...fileDateObj))),
+    },
+  };
+  return date;
+};
+
 const logsHistorySlice = createSlice({
   name: "logsHistory",
   initialState: {
@@ -33,6 +53,16 @@ const logsHistorySlice = createSlice({
     logsHistory: {
       fileLogsIndex: [],
       dbLogsIndex: [],
+    },
+    dateRange: {
+      db: {
+        startDate: "",
+        endDate: "",
+      },
+      file: {
+        startDate: "",
+        endDate: "",
+      },
     },
     status: "idle",
     error: null,
@@ -50,6 +80,7 @@ const logsHistorySlice = createSlice({
       .addCase(updateLogsHistory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.logsHistory = action.payload;
+        state.dateRange = dateRange(action.payload);
       })
       .addCase(updateLogsHistory.rejected, (state, action) => {
         state.status = "failed";
@@ -61,6 +92,7 @@ const logsHistorySlice = createSlice({
       .addCase(getLogsHistory.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.logsHistory = action.payload;
+        state.dateRange = dateRange(action.payload);
       })
       .addCase(getLogsHistory.rejected, (state, action) => {
         state.status = "failed";

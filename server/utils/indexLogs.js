@@ -23,7 +23,7 @@ const updateIndexes = async () => {
     const files = fs.readdirSync(logDir);
     files.forEach((file) => {
       const [date] = file.split(".");
-      if (!fileLogsIndex.includes(date)) {
+      if (!fileLogsIndex.includes(date) && date !== "todayLog") {
         fileLogsIndex.push(date);
       }
     });

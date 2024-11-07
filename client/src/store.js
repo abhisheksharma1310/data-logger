@@ -30,7 +30,13 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["navDetail", "logsHistory"], // Add the slices you want to persist
+  whitelist: [
+    "navDetail",
+    "baseUrl",
+    "serialConfig",
+    "liveSerialData",
+    "logsHistory",
+  ], // Add the slices you want to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
