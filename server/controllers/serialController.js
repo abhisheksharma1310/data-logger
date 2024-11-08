@@ -329,21 +329,35 @@ export const todayLogs = async (req, res) => {
 };
 
 // api function for delete requested logs by date
+const deleteLogFile = (date) => {
+  // Delete log files
+  const logFile = path.join(logDir, `${date}.txt`);
+  if (fs.existsSync(logFile)) {
+    fs.unlinkSync(logFile);
+  }
+};
+const deleteLogFromDB = async (date) => {
+  // Delete logs from database
+  await Log.deleteMany({
+    timestamp: {
+      $gte: new Date(`${date}T00:00:00.000Z`),
+      $lt: new Date(`${date}T23:59:59.999Z`),
+    },
+  });
+};
 export const deleteLogsByDate = async (req, res) => {
   const { date } = req.params;
+  const { option } = req.body;
+  console.log(date);
+  console.log(option);
   try {
-    // Delete logs from database
-    await Log.deleteMany({
-      timestamp: {
-        $gte: new Date(`${date}T00:00:00.000Z`),
-        $lt: new Date(`${date}T23:59:59.999Z`),
-      },
-    });
-
-    // Delete log files
-    const logFile = path.join(logDir, `${date}.txt`);
-    if (fs.existsSync(logFile)) {
-      fs.unlinkSync(logFile);
+    if (option === "deleteFromDB") {
+      deleteLogFromDB(date);
+    } else if (option === "deleteFromFile") {
+      deleteLogFile(date);
+    } else if (option === "deleteFromBoth") {
+      deleteLogFromDB(date);
+      deleteLogFile(date);
     }
 
     res.status(200).json({ message: "Logs deleted successfully" });

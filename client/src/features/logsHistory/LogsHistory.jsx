@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Table, Divider, Tag, Button, Select, Input, DatePicker } from "antd";
+import { Table, Divider, Tag, Button, Select, DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import {
@@ -9,7 +9,7 @@ import {
   updateLogsHistory,
 } from "./logsHistorySlice";
 import ShowLogsData from "../ShowLogsData/ShowLogsData";
-import CustomModal from "../../components/Modal/CustumModal";
+import DeleteModal from "../../components/Modal/DeleteModal";
 
 const { RangePicker } = DatePicker;
 
@@ -24,7 +24,7 @@ const logTypes = [
   },
 ];
 
-const createColumn = (setShowLog, setLogDate, showModal) => {
+const createColumn = (setShowLog, setLogData, showModal) => {
   const columns = [
     {
       title: "Logs Date",
@@ -33,7 +33,7 @@ const createColumn = (setShowLog, setLogDate, showModal) => {
       render: (date) => (
         <Button
           onClick={() => {
-            setLogDate(date);
+            setLogData({ date: date });
             setShowLog(true);
           }}
           color="primary"
@@ -46,7 +46,7 @@ const createColumn = (setShowLog, setLogDate, showModal) => {
       sorter: (a, b) => new Date(a.date) - new Date(b.date),
     },
     {
-      title: "Types",
+      title: "Storage Type",
       key: "types",
       dataIndex: "types",
       render: (types) => (
@@ -72,7 +72,7 @@ const createColumn = (setShowLog, setLogDate, showModal) => {
         <span>
           <Button
             onClick={() => {
-              setLogDate(record.date);
+              setLogData(record);
               setShowLog(true);
             }}
             color="primary"
@@ -84,7 +84,7 @@ const createColumn = (setShowLog, setLogDate, showModal) => {
           <Button
             color="danger"
             onClick={() => {
-              setLogDate(record.date);
+              setLogData(record);
               showModal();
             }}
             type="link"
@@ -109,7 +109,7 @@ const LogsHistory = ({ baseURL }) => {
     (state) => state.logsHistory
   );
   const [showLog, setShowLog] = useState(false);
-  const [logDate, setLogDate] = useState("");
+  const [logData, setLogData] = useState("");
   const [open, setOpen] = useState(false);
   const [searchDate, setSearchDate] = useState({
     startDate:
@@ -118,13 +118,11 @@ const LogsHistory = ({ baseURL }) => {
       logType === "db" ? dateRange?.db?.endDate : dateRange?.file?.endDate,
   });
 
-  console.log(searchDate);
-
   const showModal = () => {
     setOpen(true);
   };
 
-  const columns = createColumn(setShowLog, setLogDate, showModal);
+  const columns = createColumn(setShowLog, setLogData, showModal);
 
   const loadLogHistory = () => {
     dispatch(getLogsHistory({ baseURL }));
@@ -148,9 +146,9 @@ const LogsHistory = ({ baseURL }) => {
       return date;
     };
 
-    let { fileLogsIndex, dbLogsIndex } = logsHistory;
+    const { fileLogsIndex, dbLogsIndex } = logsHistory;
 
-    fileLogsIndex = fileLogsIndex
+    const fileLogs = fileLogsIndex
       ?.filter(
         (date) =>
           normalizeDate(date) >= normalizeDate(searchDate.startDate) &&
@@ -159,10 +157,10 @@ const LogsHistory = ({ baseURL }) => {
       .map((date, index) => ({
         key: index,
         date: date,
-        types: ["file"],
+        types: dbLogsIndex.includes(date) ? ["file", "database"] : ["file"],
       }));
 
-    dbLogsIndex = dbLogsIndex
+    const dbLogs = dbLogsIndex
       ?.filter(
         (date) =>
           normalizeDate(date) >= normalizeDate(searchDate.startDate) &&
@@ -171,17 +169,25 @@ const LogsHistory = ({ baseURL }) => {
       .map((date, index) => ({
         key: index,
         date: date,
-        types: ["database"],
+        types: fileLogsIndex.includes(date)
+          ? ["file", "database"]
+          : ["database"],
       }));
 
-    return { fileLogsIndex, dbLogsIndex };
+    return { fileLogs, dbLogs };
   }, [logsHistory, searchDate, logType]);
 
-  const handleLogDelete = () => {
-    dispatch(deleteLogsByDate({ baseURL, date: logDate }));
+  const handleLogDelete = (option) => {
+    if (option === "deleteFromDB") {
+      dispatch(deleteLogsByDate({ baseURL, date: logData.date, option }));
+    } else if (option === "deleteFromFile") {
+      dispatch(deleteLogsByDate({ baseURL, date: logData.date, option }));
+    } else if (option === "deleteFromBoth") {
+      dispatch(deleteLogsByDate({ baseURL, date: logData.date, option }));
+    }
     setTimeout(() => {
       reBuildLogHistory();
-    }, [5000]);
+    }, [3000]);
   };
 
   useEffect(() => {
@@ -195,17 +201,19 @@ const LogsHistory = ({ baseURL }) => {
 
   return (
     <>
+      {logData && (
+        <DeleteModal
+          title={"Delete Log"}
+          open={open}
+          setOpen={setOpen}
+          func={handleLogDelete}
+          data={logData}
+        >
+          <h3>Delete logs of date: {logData.date}</h3>
+        </DeleteModal>
+      )}
       {!showLog && (
         <div>
-          <CustomModal
-            title={"Delete Log"}
-            open={open}
-            setOpen={setOpen}
-            func={handleLogDelete}
-          >
-            <h3>Delete logs of date: {logDate}</h3>
-            <h3>Logs will be deleted from all sources file and database.</h3>
-          </CustomModal>
           <div className="input-div" style={{ margin: "20px 0" }}>
             <h3 style={{ display: "inline", paddingRight: "10px" }}>
               Log From
@@ -238,14 +246,14 @@ const LogsHistory = ({ baseURL }) => {
               Rebuild Log Table
             </Button>
           </div>
-          {(logsHistoryData?.fileLogsIndex?.length > 0 ||
-            logsHistoryData?.dbLogsIndex?.length > 0) && (
+          {(logsHistoryData?.fileLogs?.length > 0 ||
+            logsHistoryData?.dbLogs?.length > 0) && (
             <Table
               columns={columns}
               dataSource={
                 logType === "db"
-                  ? logsHistoryData?.dbLogsIndex
-                  : logsHistoryData?.fileLogsIndex
+                  ? logsHistoryData?.dbLogs
+                  : logsHistoryData?.fileLogs
               }
             />
           )}
@@ -254,10 +262,10 @@ const LogsHistory = ({ baseURL }) => {
       {showLog && (
         <ShowLogsData
           baseURL={baseURL}
-          date={logDate}
+          date={logData?.date}
           logType={logType}
           setShowLog={setShowLog}
-          setLogDate={setLogDate}
+          setLogDate={setLogData}
         />
       )}
     </>

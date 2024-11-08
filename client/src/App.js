@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ConfigProvider, theme } from "antd";
 import MainLayout from "./components/layout/main-layout";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import {
@@ -15,7 +15,6 @@ import Home from "./components/Home";
 import SerialConfig from "./features/serialConfig/SerialConfig";
 import LiveSerialData from "./features/liveSerialData/LiveSerialData";
 import LogsHistory from "./features/logsHistory/LogsHistory";
-import ShowLogsData from "./features/ShowLogsData/ShowLogsData";
 
 export default function App() {
   const dispatch = useDispatch();

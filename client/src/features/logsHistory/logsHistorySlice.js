@@ -19,9 +19,11 @@ export const getLogsHistory = createAsyncThunk(
 );
 
 export const deleteLogsByDate = createAsyncThunk(
-  "logs",
-  async ({ baseURL, date }) => {
-    const response = await axios.delete(`${baseURL}/serial/logs/${date}`);
+  "logs/delete",
+  async ({ baseURL, date, option }) => {
+    const response = await axios.delete(`${baseURL}/serial/logs/${date}`, {
+      data: { option },
+    });
     return response.data;
   }
 );
