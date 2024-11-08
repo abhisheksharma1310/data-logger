@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -24,16 +24,48 @@ ChartJS.register(
 );
 
 const Json2Chart = ({ jsonData }) => {
-  const [chartData, setChartData] = useState(jsonData);
+  const [selectedDataItems, setSelectedDataItems] = useState([]);
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [config, setConfig] = useState({});
+  const [showSeparateCharts, setShowSeparateCharts] = useState(false);
   const chartRef = useRef(null);
 
-  const handleDataChange = (event) => {
-    const { name, value } = event.target;
+  // Process the jsonData to extract labels and data
+  useEffect(() => {
+    if (!jsonData || !Array.isArray(jsonData)) {
+      console.error("Invalid jsonData:", jsonData);
+      return;
+    }
+
+    const labels = jsonData.map((item) => item.timestamp);
+
+    const datasets = selectedDataItems.map((dataItem) => ({
+      label: config[dataItem + "Label"] || dataItem,
+      data: jsonData.map((item) => item[dataItem]),
+      backgroundColor:
+        config[dataItem + "BackgroundColor"] || `rgba(75,192,192,0.4)`,
+      borderColor: config[dataItem + "BorderColor"] || `rgba(75,192,192,1)`,
+      borderWidth: config[dataItem + "BorderWidth"] || 1,
+    }));
+
     setChartData({
-      ...chartData,
-      [name]: value,
+      labels,
+      datasets,
     });
+  }, [jsonData, config, selectedDataItems]);
+
+  const downloadChart = () => {
+    html2canvas(chartRef.current).then((canvas) => {
+      canvas.toBlob((blob) => {
+        saveAs(blob, "chart.png");
+      });
+    });
+  };
+
+  const handleDataItemChange = (event) => {
+    setSelectedDataItems(
+      Array.from(event.target.selectedOptions, (option) => option.value)
+    );
   };
 
   const handleConfigChange = (event) => {
@@ -44,73 +76,83 @@ const Json2Chart = ({ jsonData }) => {
     });
   };
 
-  const downloadChart = () => {
-    html2canvas(chartRef.current).then((canvas) => {
-      canvas.toBlob((blob) => {
-        saveAs(blob, "chart.png");
-      });
-    });
-  };
-
-  const data = {
-    labels: chartData.labels,
-    datasets: [
-      {
-        label: config.label || "Dataset",
-        data: chartData.data,
-        backgroundColor: config.backgroundColor || "rgba(75,192,192,0.4)",
-        borderColor: config.borderColor || "rgba(75,192,192,1)",
-        borderWidth: config.borderWidth || 1,
-      },
-    ],
-  };
-
   return (
     <div>
       <h2>Customizable Chart</h2>
       <div>
-        <h3>Customize Data:</h3>
-        {Object.keys(jsonData).map((key) => (
-          <div key={key}>
-            <label>{key}</label>
+        <h3>Select Data Items to Display:</h3>
+        <select multiple onChange={handleDataItemChange}>
+          {Object.keys(jsonData[0] || {})
+            .filter((key) => key !== "timestamp")
+            .map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+        </select>
+      </div>
+      <div>
+        <h3>Customize Chart Configuration:</h3>
+        {selectedDataItems.map((dataItem) => (
+          <div key={dataItem}>
+            <h4>{dataItem}</h4>
+            <label>Label</label>
             <input
-              name={key}
-              value={chartData[key]}
-              onChange={handleDataChange}
+              name={`${dataItem}Label`}
+              value={config[`${dataItem}Label`] || ""}
+              onChange={handleConfigChange}
+            />
+            <label>Background Color</label>
+            <input
+              name={`${dataItem}BackgroundColor`}
+              value={config[`${dataItem}BackgroundColor`] || ""}
+              onChange={handleConfigChange}
+            />
+            <label>Border Color</label>
+            <input
+              name={`${dataItem}BorderColor`}
+              value={config[`${dataItem}BorderColor`] || ""}
+              onChange={handleConfigChange}
+            />
+            <label>Border Width</label>
+            <input
+              name={`${dataItem}BorderWidth`}
+              value={config[`${dataItem}BorderWidth`] || 1}
+              type="number"
+              onChange={handleConfigChange}
             />
           </div>
         ))}
       </div>
       <div>
-        <h3>Customize Chart Configuration:</h3>
-        <label>Label</label>
+        <label>Show Separate Charts</label>
         <input
-          name="label"
-          value={config.label}
-          onChange={handleConfigChange}
-        />
-        <label>Background Color</label>
-        <input
-          name="backgroundColor"
-          value={config.backgroundColor}
-          onChange={handleConfigChange}
-        />
-        <label>Border Color</label>
-        <input
-          name="borderColor"
-          value={config.borderColor}
-          onChange={handleConfigChange}
-        />
-        <label>Border Width</label>
-        <input
-          name="borderWidth"
-          value={config.borderWidth}
-          type="number"
-          onChange={handleConfigChange}
+          type="checkbox"
+          checked={showSeparateCharts}
+          onChange={(e) => setShowSeparateCharts(e.target.checked)}
         />
       </div>
       <div ref={chartRef}>
-        <Line data={data} />
+        {showSeparateCharts ? (
+          selectedDataItems.map((dataItem) => (
+            <div key={dataItem}>
+              <h3>{config[dataItem + "Label"] || dataItem}</h3>
+              <Line
+                data={{
+                  labels: chartData.labels,
+                  datasets: [
+                    chartData.datasets.find(
+                      (d) =>
+                        d.label === (config[dataItem + "Label"] || dataItem)
+                    ),
+                  ],
+                }}
+              />
+            </div>
+          ))
+        ) : (
+          <Line data={chartData} />
+        )}
       </div>
       <button onClick={downloadChart}>Download Chart as Image</button>
     </div>

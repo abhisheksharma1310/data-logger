@@ -97,6 +97,7 @@ const DataViewer = ({ serialData }) => {
           }}
           onChange={(e) => setViewType(e)}
           options={viewTypeOptions}
+          disabled={dataType === "raw"}
         />
         <h3 style={{ display: "inline", padding: "0 10px" }}>Timestamp</h3>
         <Select
@@ -106,6 +107,7 @@ const DataViewer = ({ serialData }) => {
           }}
           onChange={(e) => setShowTime(e)}
           options={showTimeOptions}
+          disabled={viewType === "chart"}
         />
       </div>
 
@@ -117,10 +119,6 @@ const DataViewer = ({ serialData }) => {
       </div>
     </div>
   );
-};
-
-DataViewer.propTypes = {
-  jsonData: PropTypes.any.isRequired,
 };
 
 export default DataViewer;

@@ -265,7 +265,7 @@ const LogsHistory = ({ baseURL }) => {
           date={logData?.date}
           logType={logType}
           setShowLog={setShowLog}
-          setLogDate={setLogData}
+          setLogData={setLogData}
         />
       )}
     </>

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLogsByDate } from "./showLogsDataSlice";
 import DataViewer from "../../components/DataViewer/DataViewer";
-import { Button, Select } from "antd";
+import { Button, Select, Spin } from "antd";
 
 const logTypes = [
   {
@@ -15,7 +15,7 @@ const logTypes = [
   },
 ];
 
-const ShowLogsData = ({ baseURL, date, logType, setShowLog, setLogDate }) => {
+const ShowLogsData = ({ baseURL, date, logType, setShowLog, setLogData }) => {
   const dispatch = useDispatch();
   const { logs, status, error } = useSelector((state) => state.logs);
   const [type, setType] = useState(logType);
@@ -28,15 +28,13 @@ const ShowLogsData = ({ baseURL, date, logType, setShowLog, setLogDate }) => {
     loadLogs();
   }, [date]);
 
-  console.log(logs);
-
   return (
     <div>
       <div className="input-div" style={{ margin: "20px 0" }}>
         <Button
           onClick={() => {
             setShowLog(false);
-            setLogDate("");
+            setLogData("");
           }}
           type="primary"
         >
@@ -54,7 +52,11 @@ const ShowLogsData = ({ baseURL, date, logType, setShowLog, setLogDate }) => {
           options={logTypes}
         />
       </div>
-      <DataViewer serialData={type === "db" ? logs?.db : logs?.file} />
+      <Spin spinning={status === "loading"} percent={"auto"} />
+      {status === "succeeded" && (
+        <DataViewer serialData={type === "db" ? logs?.db : logs?.file} />
+      )}
+      {status === "fail" && <p>{error.toString()}</p>}
     </div>
   );
 };
