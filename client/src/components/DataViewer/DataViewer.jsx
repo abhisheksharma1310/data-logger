@@ -49,7 +49,7 @@ const isValidJson = (data) => {
 
 const localTime = (timestamp) => {
   const utcDate = new Date(timestamp);
-  return utcDate.toLocaleString();
+  return utcDate.toLocaleTimeString();
 };
 
 const DataViewer = ({ serialData }) => {
@@ -112,7 +112,7 @@ const DataViewer = ({ serialData }) => {
       </div>
 
       <div style={{ margin: "10px 0" }}>
-        <Scrollable height={"320px"}>
+        <Scrollable height={"50px"}>
           {viewType === "table" && <JsonToTable json={jsonData} />}
           {viewType === "chart" && <Json2Chart jsonData={jsonData} />}
         </Scrollable>
