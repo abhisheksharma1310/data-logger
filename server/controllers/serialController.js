@@ -51,9 +51,11 @@ export const initSocketIo = (io) => {
     io.on("connection", (socket) => {
       console.log("a user connected");
       // listen message event and reply same msg
-      socket.on("message", (msg) => {
-        console.log("message: " + msg);
-        io.emit("message", msg);
+      socket.on("serial-data-write", (msg) => {
+        // write data on serial port received from client
+        if (port) port.write(msg);
+        // console.log("message: " + msg);
+        // io.emit("message", msg);
       });
       // emit port status
       if (port) emitIo("serial-port", port.isOpen);
@@ -247,7 +249,6 @@ const initializeLogging = async () => {
   }
   if (config) {
     // call function to start logging and monitor serial port
-
     monitorSerialPort(config);
   }
 };
@@ -379,8 +380,6 @@ const deleteLogFromDB = async (date) => {
 export const deleteLogsByDate = async (req, res) => {
   const { date } = req.params;
   const { option } = req.body;
-  console.log(date);
-  console.log(option);
   try {
     if (option === "deleteFromDB") {
       deleteLogFromDB(date);

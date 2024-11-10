@@ -4,12 +4,14 @@ import { clearMessages, todayLogs } from "./liveDataSlice";
 import { Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import DataViewer from "../../components/DataViewer/DataViewer";
+import MessageModal from "../../components/Modal/MessageModal";
 
 const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
   const dispatch = useDispatch();
   const { messages, isConnected, isPortOpen, status, serverErrors, error } =
     useSelector((state) => state.liveSerialData);
   const [input, setInput] = useState("");
+  const [open, setOpen] = useState(false);
 
   const retriveTodayLogs = () => {
     dispatch(todayLogs({ baseURL }));
@@ -32,12 +34,15 @@ const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
         {ioError && <h3>{ioError.toString()}</h3>}
       </div>
       {isConnected && isPortOpen && (
-        <div className="display-flex g-25">
-          <div className="max-width">
+        <div className="display-flex-col">
+          <div>
             <div className="display-flex">
               <h3>Received data:</h3>
               <Button type="primary" onClick={retriveTodayLogs}>
                 Sync
+              </Button>
+              <Button type="primary" onClick={() => setOpen((p) => !p)}>
+                Send Message
               </Button>
               {messages[0] && (
                 <Button
@@ -51,23 +56,20 @@ const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
             </div>
             <DataViewer serialData={messages} />
           </div>
-          <div className="input-item">
-            <h3>Send data</h3>
+          <MessageModal
+            title="Send data to serial port"
+            open={open}
+            setOpen={setOpen}
+            sendMessage={sendMessage}
+            isConnected={isConnected}
+          >
             <TextArea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Enter message"
               required
             ></TextArea>
-            <Button
-              type="primary"
-              onClick={sendMessage}
-              disabled={!isConnected}
-              style={{ margin: "10px 0" }}
-            >
-              Send
-            </Button>
-          </div>
+          </MessageModal>
         </div>
       )}
     </div>
