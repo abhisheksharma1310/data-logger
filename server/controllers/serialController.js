@@ -20,11 +20,29 @@ if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir);
 }
 
+// get current date from todayLog file
+const getCurrentLogDate = () => {
+  const fileName = path.join(logDir, "todayLog.txt");
+  if (!fs.existsSync(fileName)) {
+    return null;
+  }
+  const data = fs.readFileSync(fileName, "utf-8").split("\n").filter(Boolean);
+  const lastLog = data[data.length - 1];
+  if (lastLog) {
+    const logDate = new Date(lastLog.split(" - ")[0])
+      .toISOString()
+      .split("T")[0];
+    return logDate;
+  }
+  return null;
+};
+
 // global variables
 let port;
 let parser;
 let ioGlobal;
 let deviceRemoved = false;
+let currentDay = getCurrentLogDate() || new Date().toISOString().split("T")[0];
 
 // listen for socket.io client
 export const initSocketIo = (io) => {
@@ -107,6 +125,25 @@ const initSerialPort = async (config) => {
   });
 };
 
+// log today serial port data
+const logTodayData = (logData) => {
+  const today = new Date().toISOString().split("T")[0];
+  // Check if the date has changed
+  if (today !== currentDay) {
+    currentDay = today;
+    // Clear the content of todayLog.txt at the start of the new day
+    fs.writeFileSync(path.join(logDir, "todayLog.txt"), "");
+  }
+  const fileName = path.join(logDir, "todayLog.txt");
+  fs.appendFile(fileName, logData, (err) => {
+    if (err) {
+      console.error("Error logging data to file:", err);
+      // Emit your IO error event if required
+      emitIo("error", `Error logging data to file: ${err}`);
+    }
+  });
+};
+
 // function to start auto logging based on saved config file
 const startLogging = async () => {
   const config = loadConfig();
@@ -122,13 +159,7 @@ const startLogging = async () => {
       const date = new Date().toISOString().split("T")[0];
 
       // today logs
-      const fileName = path.join(logDir, `todayLog.txt`);
-      fs.appendFile(fileName, logData, (err) => {
-        if (err) {
-          console.error("Error logging data to file:", err);
-          emitIo("error", `Error logging data to file:, ${err}`);
-        }
-      });
+      logTodayData(logData);
       // logs to file
       if (autoLog && logToFile) {
         const fileName = path.join(logDir, `${date}.txt`);
