@@ -54,11 +54,13 @@ export const initSocketIo = (io) => {
       socket.on("serial-data-write", (msg) => {
         // write data on serial port received from client
         if (port) port.write(msg);
-        // console.log("message: " + msg);
-        // io.emit("message", msg);
       });
       // emit port status
-      if (port) emitIo("serial-port", port.isOpen);
+      if (port) {
+        emitIo("serial-port", port.isOpen);
+      } else {
+        emitIo("serial-port", false);
+      }
       socket.on("disconnect", () => {
         console.log("user disconnected");
       });
