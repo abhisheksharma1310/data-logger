@@ -1,0 +1,76 @@
+{
+  "lang": "en-US",
+  "short_name": "Data Logger",
+  "name": "Data Logger Web App",
+  "description": "This web app helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/https://abhisheksharma1310.github.io/data-logger/",
+  "start_url": "https://abhisheksharma1310.github.io/data-logger/home",
+  "display": "fullscreen",
+  "theme_color": "#00b96b",
+  "background_color": "#ffffff",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay",
+    "minimal-ui"
+  ],
+  "screenshots": [
+    {
+      "src": "mockup.png",
+      "type": "image/png",
+      "sizes": "690x362",
+      "form_factor": "narrow",
+      "label": "web app mockup image"
+    },
+    {
+      "src": "screenshot.jpeg",
+      "type": "image/jpeg",
+      "sizes": "1755x987",
+      "form_factor": "wide",
+      "label": "web app mockup image"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Serial Port",
+      "url": "/serial-data",
+      "description": "Access serial port data",
+      "icons": [
+        {
+          "src": "icon128.png",
+          "sizes": "128x128",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "Data Logger Webapp",
+      "url": "https://abhisheksharma1310.github.io/data-logger/"
+    }
+  ],
+  "prefer_related_applications": true
+}
