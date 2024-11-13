@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
-import PropTypes from "prop-types";
 import { JsonToTable } from "react-json-to-table";
-import { Button, Select, Switch } from "antd";
+import { Select } from "antd";
 import Json2Chart from "../Json2Chart/Json2Chart";
 import Scrollable from "../Scrollable";
+import DataDownloader from "../DataDownloader/DataDownloader";
 
 const dataTypeOptions = [
   {
@@ -109,6 +109,7 @@ const DataViewer = ({ serialData }) => {
           options={showTimeOptions}
           disabled={viewType === "chart"}
         />
+        <DataDownloader jsonData={jsonData} />
       </div>
 
       <div style={{ margin: "10px 0" }}>

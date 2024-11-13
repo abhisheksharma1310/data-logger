@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { setNavDetail } from "../../features/navDetail/navDetailSlice";
 import {
   HomeOutlined,
-  ApiOutlined,
-  UsbOutlined,
-  GlobalOutlined,
+  SettingOutlined,
+  HistoryOutlined,
+  FundViewOutlined,
   RobotOutlined,
   CloudSyncOutlined,
 } from "@ant-design/icons";
@@ -25,19 +25,19 @@ const menuItems = [
     key: "1",
     path: "/serial-live",
     label: "Real Time Data",
-    icon: <HomeOutlined />,
+    icon: <FundViewOutlined />,
   },
   {
     key: "2",
     path: "/logs-history",
     label: "Logs History",
-    icon: <HomeOutlined />,
+    icon: <HistoryOutlined />,
   },
   {
     key: "3",
     path: "/serial-config",
     label: "Config Setting",
-    icon: <ApiOutlined />,
+    icon: <SettingOutlined />,
     // children: [
     //   {
     //     key: "2",

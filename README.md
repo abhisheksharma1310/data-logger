@@ -1,5 +1,10 @@
 # Data Logger and Chart Visualization
 
+<div width="100%">
+   <image src="./client/public/mockup.png" />
+   <a href="https://abhisheksharma1310.github.io/data-logger" target="_blank">Click here for live demo</a>
+</div>
+
 Welcome to the Data Logger and Chart Visualization application! This tool helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization.
 
 # Table of Contents
