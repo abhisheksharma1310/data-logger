@@ -1,8 +1,8 @@
 {
   "lang": "en-US",
-  "short_name": "Data Visualizer",
-  "name": "Data Visualization Web App",
-  "description": "Web application allows users to access and display data from various protocols including Serial Port, HTTP, MQTT, and WebSocket",
+  "short_name": "Data Logger",
+  "name": "Data Logger Web App",
+  "description": "This web app helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization",
   "icons": [
     {
       "src": "favicon.ico",
@@ -26,8 +26,8 @@
       "purpose": "maskable"
     }
   ],
-  "id": "/https://abhisheksharma1310.github.io/data-visualizer/",
-  "start_url": "https://abhisheksharma1310.github.io/data-visualizer/home",
+  "id": "/https://abhisheksharma1310.github.io/data-logger/",
+  "start_url": "https://abhisheksharma1310.github.io/data-logger/home",
   "display": "fullscreen",
   "theme_color": "#00b96b",
   "background_color": "#ffffff",
@@ -64,60 +64,12 @@
           "type": "image/png"
         }
       ]
-    },
-    {
-      "name": "HTTP",
-      "url": "/http-data",
-      "description": "Access Http data",
-      "icons": [
-        {
-          "src": "icon128.png",
-          "sizes": "128x128",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "MQTT",
-      "url": "/mqtt-data",
-      "description": "Connect to mqtt broker",
-      "icons": [
-        {
-          "src": "icon128.png",
-          "sizes": "128x128",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Web Socket",
-      "url": "/websocket-data",
-      "description": "connect to web socket server",
-      "icons": [
-        {
-          "src": "icon128.png",
-          "sizes": "128x128",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Socket.Io",
-      "url": "/socketio-data",
-      "description": "connect to socket.io server",
-      "icons": [
-        {
-          "src": "icon128.png",
-          "sizes": "128x128",
-          "type": "image/png"
-        }
-      ]
     }
   ],
   "related_applications": [
     {
-      "platform": "visualizer webapp",
-      "url": "https://abhisheksharma1310.github.io/data-visualizer/"
+      "platform": "Data Logger Webapp",
+      "url": "https://abhisheksharma1310.github.io/data-logger/"
     }
   ],
   "prefer_related_applications": true

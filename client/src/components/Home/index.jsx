@@ -6,48 +6,45 @@ const Home = () => {
     <div className="container">
       <div className="content">
         <p className="intro">
-          Welcome to our versatile web application, designed to seamlessly
-          connect and display data from various protocols including Serial Port,
-          HTTP, MQTT, WebSocket and Socket.io. Whether you’re a developer,
-          engineer, or hobbyist, our app provides a user-friendly interface to
-          access and visualize your data in real-time.
+          Welcome to the Data Logger and Chart Visualization application! This
+          tool helps you seamlessly log and visualize sensor data, providing a
+          user-friendly web interface for dynamic chart creation and
+          customization.
         </p>
         <h2 className="features-title">Key Features:</h2>
         <ul className="features-list">
           <li className="feature-item">
-            <strong>Multi-Protocol Support:</strong> Easily connect to Serial
-            Port, HTTP, MQTT, WebSocket and Socket.io.
+            <strong>Log Management:</strong> Automatically logs and clears the
+            serial data according to configuration file.
           </li>
           <li className="feature-item">
             <strong>Real-Time Data Display:</strong> View your data in a
-            structured tabular format.
+            structured tabular format and as chart.
           </li>
           <li className="feature-item">
-            <strong>User-Friendly Interface:</strong> Enter protocol-specific
-            details effortlessly.
+            <strong>Customizable Charts:</strong> Select data items to display,
+            choose chart types (Line, Bar, Pie), and customize chart appearance.
           </li>
           <li className="feature-item">
-            <strong>Cross-Platform Compatibility:</strong> Serial Port Works
-            seamlessly on any browsers.
+            <strong>Cross-Platform Compatibility:</strong> App Works seamlessly
+            on any os windows or linux.
           </li>
           <li className="feature-item">
-            <strong>PWA Support:</strong> Install web app as progressive web app
-            on laptop or mobile and work without internet for local development.
+            <strong>Downloadable Charts:</strong> Save your charts as images.
+          </li>
+          <li className="feature-item">
+            <strong>Option to choose logs storage:</strong> Logs can be stored
+            in mongoDB database or in file.
           </li>
         </ul>
         <p className="conclusion">
-          Explore the power of real-time data access and visualization with our
-          app. Get started by entering the required details for your preferred
-          protocol and see your data come to life!
-        </p>
-        <p className="conclusion">
           For any help see github repository at:
           <a
-            href="https://github.com/abhisheksharma1310/data-visualizer.git"
+            href="https://github.com/abhisheksharma1310/data-logger.git"
             target="_blank"
             rel="noreferrer"
           >
-            https://github.com/abhisheksharma1310/data-visualizer.git
+            https://github.com/abhisheksharma1310/data-logger.git
           </a>
         </p>
       </div>
