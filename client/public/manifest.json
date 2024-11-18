@@ -43,13 +43,6 @@
       "sizes": "690x362",
       "form_factor": "narrow",
       "label": "web app mockup image"
-    },
-    {
-      "src": "screenshot.jpeg",
-      "type": "image/jpeg",
-      "sizes": "1755x987",
-      "form_factor": "wide",
-      "label": "web app mockup image"
     }
   ],
   "shortcuts": [

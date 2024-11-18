@@ -190,6 +190,13 @@ const LogsHistory = ({ baseURL }) => {
     }, [3000]);
   };
 
+  const handleLogTypeChange = (type) => {
+    dispatch(setLogType(type));
+    setTimeout(() => {
+      loadLogHistory();
+    }, 3000);
+  };
+
   useEffect(() => {
     if (
       logsHistory?.fileLogsIndex?.length === 0 ||
@@ -223,9 +230,7 @@ const LogsHistory = ({ baseURL }) => {
               style={{
                 width: "100px",
               }}
-              onChange={(e) => {
-                dispatch(setLogType(e));
-              }}
+              onChange={handleLogTypeChange}
               options={logTypes}
             />
             <RangePicker
