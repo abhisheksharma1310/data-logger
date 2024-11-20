@@ -279,6 +279,23 @@ export const configure = async (req, res) => {
   }
 };
 
+export const getConfig = async (req, res) => {
+  try {
+    // Fetch config from the config file
+    const configPath = path.join(configDir, "serialLog.config.json");
+    let config = {};
+
+    if (fs.existsSync(configPath)) {
+      config = fs.readFileSync(configPath, "utf8");
+    }
+    res.status(200).json(JSON.parse(config) || {});
+  } catch (error) {
+    res.status(500).json({
+      message: `Failed to get config file from file system: ${error.message}`,
+    });
+  }
+};
+
 // api function to initialize or check serial port status
 export const checkSerialStatus = async (req, res) => {
   try {

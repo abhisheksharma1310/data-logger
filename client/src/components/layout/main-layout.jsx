@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import Scrollable from "../Scrollable";
+import { setLogType } from "../../features/logsHistory/logsHistorySlice";
 const { Header, Content, Footer, Sider } = Layout;
 
 const menuItems = [
@@ -88,6 +89,7 @@ const MainLayout = ({ children }) => {
     const path = flatMenuItems[key].path;
     const header = flatMenuItems[key].label;
     dispatch(setNavDetail({ key, header, path }));
+    dispatch(setLogType("file"));
     //navigate(path);
   };
 

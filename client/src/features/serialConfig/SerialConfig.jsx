@@ -4,6 +4,7 @@ import { verifyBaseURL, setStatus, setBaseUrl } from "./baseUrlSlice";
 import { Button, Form, Input, Space } from "antd";
 import ConfigForm from "./ConfigForm";
 import Loading from "../../components/feedbacks/Loading";
+import { getConfigureSerial } from "./configSlice";
 
 const formItemLayout = {
   labelCol: {
@@ -22,10 +23,19 @@ const SerialConfig = () => {
     const baseUrlInput = values.baseURL;
     dispatch(setBaseUrl(baseUrlInput));
     dispatch(verifyBaseURL({ baseURL: baseUrlInput }));
+    loadConfig();
+  };
+
+  const loadConfig = () => {
+    if (status === "succeeded") {
+      setTimeout(() => {
+        dispatch(getConfigureSerial({ baseURL }));
+      }, 3000);
+    }
   };
 
   const handleUrlEdit = () => {
-    const ans = prompt(`Are you soure to edit server base url?
+    const ans = prompt(`Are you sure to edit server base url?
         If yes type YES.
         `);
     if (ans === "YES") {

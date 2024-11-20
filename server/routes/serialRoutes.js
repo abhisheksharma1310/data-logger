@@ -1,6 +1,7 @@
 import express from "express";
 import {
   configure,
+  getConfig,
   checkSerialStatus,
   getLogsByDate,
   todayLogs,
@@ -14,6 +15,7 @@ const router = express.Router();
 
 const serialRouter = (io) => {
   router.post("/configure", configure);
+  router.get("/configure", getConfig);
   router.get("/status", checkSerialStatus);
   router.get("/todayLogs", todayLogs);
   router.get("/logs/:date", getLogsByDate);

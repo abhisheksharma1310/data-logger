@@ -12,6 +12,14 @@ export const configureSerial = createAsyncThunk(
   }
 );
 
+export const getConfigureSerial = createAsyncThunk(
+  "serial/getConfigure",
+  async ({ baseURL }) => {
+    const response = await axios.get(`${baseURL}/serial/configure`);
+    return response.data;
+  }
+);
+
 const serialSlice = createSlice({
   name: "serialConfig",
   initialState: {
@@ -23,7 +31,7 @@ const serialSlice = createSlice({
       mongoConfig: {
         url: "mongodb://localhost:27017/dataLogger",
       },
-      autoLog: true,
+      autoLog: false,
       autoDelete: {
         enabled: true,
         deleteAfterDays: 10,
@@ -55,6 +63,9 @@ const serialSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
         state.lastMessage = action.error.message;
+      })
+      .addCase(getConfigureSerial.fulfilled, (state, action) => {
+        state.config = action.payload;
       });
   },
 });

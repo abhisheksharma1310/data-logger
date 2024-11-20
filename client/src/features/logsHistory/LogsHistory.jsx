@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Table, Divider, Tag, Button, Select, DatePicker } from "antd";
+import { Divider, Tag, Button, Select, DatePicker } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import {
@@ -10,6 +10,8 @@ import {
 } from "./logsHistorySlice";
 import ShowLogsData from "../ShowLogsData/ShowLogsData";
 import DeleteModal from "../../components/Modal/DeleteModal";
+import LogTable from "./LogTable";
+import { configConsumerProps } from "antd/es/config-provider";
 
 const { RangePicker } = DatePicker;
 
@@ -155,7 +157,7 @@ const LogsHistory = ({ baseURL }) => {
           normalizeDate(date) <= normalizeDate(searchDate.endDate)
       )
       .map((date, index) => ({
-        key: index,
+        key: new Date(date).getTime(),
         date: date,
         types: dbLogsIndex.includes(date) ? ["file", "database"] : ["file"],
       }));
@@ -167,7 +169,7 @@ const LogsHistory = ({ baseURL }) => {
           normalizeDate(date) <= normalizeDate(searchDate.endDate)
       )
       .map((date, index) => ({
-        key: index,
+        key: new Date(date).getTime(),
         date: date,
         types: fileLogsIndex.includes(date)
           ? ["file", "database"]
@@ -175,7 +177,7 @@ const LogsHistory = ({ baseURL }) => {
       }));
 
     return { fileLogs, dbLogs };
-  }, [logsHistory, searchDate, logType]);
+  }, [logsHistory, searchDate]);
 
   const handleLogDelete = (option) => {
     if (option === "deleteFromDB") {
@@ -192,9 +194,6 @@ const LogsHistory = ({ baseURL }) => {
 
   const handleLogTypeChange = (type) => {
     dispatch(setLogType(type));
-    setTimeout(() => {
-      loadLogHistory();
-    }, 3000);
   };
 
   useEffect(() => {
@@ -205,6 +204,8 @@ const LogsHistory = ({ baseURL }) => {
       loadLogHistory();
     }
   }, []);
+
+  console.log(new Date(logsHistoryData.dbLogs[0]?.date).getTime());
 
   return (
     <>
@@ -251,17 +252,12 @@ const LogsHistory = ({ baseURL }) => {
               Rebuild Log Table
             </Button>
           </div>
-          {(logsHistoryData?.fileLogs?.length > 0 ||
-            logsHistoryData?.dbLogs?.length > 0) && (
-            <Table
-              columns={columns}
-              dataSource={
-                logType === "db"
-                  ? logsHistoryData?.dbLogs
-                  : logsHistoryData?.fileLogs
-              }
-            />
-          )}
+          <LogTable
+            logType={logType}
+            dbLogs={logsHistoryData.dbLogs}
+            fileLogs={logsHistoryData.fileLogs}
+            columns={columns}
+          />
         </div>
       )}
       {showLog && (

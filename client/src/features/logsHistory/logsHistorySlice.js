@@ -51,7 +51,7 @@ const dateRange = (logsHistory) => {
 const logsHistorySlice = createSlice({
   name: "logsHistory",
   initialState: {
-    logType: "db",
+    logType: "file",
     logsHistory: {
       fileLogsIndex: [],
       dbLogsIndex: [],
