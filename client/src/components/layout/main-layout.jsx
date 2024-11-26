@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { setNavDetail } from "../../features/navDetail/navDetailSlice";
+import {
+  setLandingPage,
+  setNavDetail,
+} from "../../features/navDetail/navDetailSlice";
 import {
   HomeOutlined,
   SettingOutlined,
@@ -88,9 +91,13 @@ const MainLayout = ({ children }) => {
     const { key } = eventObj;
     const path = flatMenuItems[key].path;
     const header = flatMenuItems[key].label;
-    dispatch(setNavDetail({ key, header, path }));
-    dispatch(setLogType("file"));
-    //navigate(path);
+    if (flatMenuItems[key].path === "/home") {
+      dispatch(setLandingPage(true));
+      navigate("/");
+    } else {
+      dispatch(setNavDetail({ key, header, path }));
+      dispatch(setLogType("file"));
+    }
   };
 
   const {

@@ -205,8 +205,6 @@ const LogsHistory = ({ baseURL }) => {
     }
   }, []);
 
-  console.log(new Date(logsHistoryData.dbLogs[0]?.date).getTime());
-
   return (
     <>
       {logData && (

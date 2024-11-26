@@ -4,6 +4,7 @@ const initialState = {
   key: "0",
   header: "Home",
   path: "/",
+  landingPage: true,
 };
 
 const navDetailSlice = createSlice({
@@ -15,9 +16,12 @@ const navDetailSlice = createSlice({
       state.header = action.payload.header;
       state.path = action.payload.path;
     },
+    setLandingPage: (state, action) => {
+      state.landingPage = action.payload;
+    },
   },
 });
 
-export const { setNavDetail } = navDetailSlice.actions;
+export const { setNavDetail, setLandingPage } = navDetailSlice.actions;
 
 export default navDetailSlice.reducer;
