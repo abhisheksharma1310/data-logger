@@ -1,7 +1,7 @@
 # Data Logger and Chart Visualization
 
 <div width="100%">
-   <image src="./client/public/mockup.png" />
+   <image src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg" />
    <a href="https://abhisheksharma1310.github.io/data-logger" target="_blank">Click here for live demo</a>
 </div>
 

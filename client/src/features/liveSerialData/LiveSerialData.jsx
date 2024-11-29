@@ -34,7 +34,7 @@ const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
         {ioError && <h3>{ioError.toString()}</h3>}
       </div>
       {isConnected && isPortOpen && (
-        <div className="display-flex-col">
+        <div className="display-flex-col" style={{ marginTop: "10px" }}>
           <div>
             <div className="display-flex">
               <h3>Received data:</h3>
@@ -54,7 +54,9 @@ const LiveSerialData = ({ baseURL, ioError, socketRef }) => {
                 </Button>
               )}
             </div>
-            <DataViewer serialData={messages} />
+            <div style={{ marginTop: "10px" }}>
+              <DataViewer serialData={messages} />
+            </div>
           </div>
           <MessageModal
             title="Send data to serial port"

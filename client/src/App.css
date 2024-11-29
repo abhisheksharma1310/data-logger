@@ -22,8 +22,9 @@
 .display-flex {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-tems: center;
+  gap: 20px;
 }
 
 .display-flex-col {

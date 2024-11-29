@@ -139,9 +139,8 @@ const MainLayout = ({ children }) => {
           style={{
             textAlign: "center",
             fontSize: "12px",
-            height: "70px",
+            height: "50px",
             ...primaryStyle,
-            marginTop: "-30px",
             padding: "0",
           }}
         >

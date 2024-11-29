@@ -1,0 +1,6 @@
+2024-11-28T14:58:07.458Z - {"temperature":null,"humidty":null}
+2024-11-28T14:58:37.547Z - {"temperature":null,"humidty":null}
+2024-11-28T14:59:07.645Z - {"temperature":null,"humidty":null}
+2024-11-28T14:59:37.748Z - {"temperature":null,"humidty":null}
+2024-11-28T15:00:07.854Z - {"temperature":null,"humidty":null}
+2024-11-28T15:00:37.953Z - {"temperature":null,"humidty":null}
