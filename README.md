@@ -1,70 +1,101 @@
 # Data Logger and Chart Visualization
 
-<div width="100%">
-   <image src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg" />
-   <a href="https://abhisheksharma1310.github.io/data-logger" target="_blank">Click here for live demo</a>
-</div>
+<div  width="100%">  <img  src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg"  alt="Data Logger Mockup"  />  <a  href="https://abhisheksharma1310.github.io/data-logger"  target="\_blank">Click here for live demo</a>  </div>
 
 Welcome to the Data Logger and Chart Visualization application! This tool helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization.
 
-# Table of Contents
+## Table of Contents
 
 Overview
-
+Features
 Getting Started
-
-Using the Application
-
+Logging Data
+Viewing Logs
 Customizing Your Charts
 
-# Overview
+## Overview
 
-1. Log Management: Automatically logs and clears the serial data according to configuration file.
+- **Log Management:** Automatically logs and clears the serial data according to the configuration file.
+- **Customizable Charts:** Select data items to display, choose chart types (Line, Bar, Pie), and customize chart appearance.
+- **Real-Time Data:** Charts and Table update in real-time as you make changes.
+- **Downloadable Charts:** Save your charts as images.
+- **Log Storage Options:** Logs can be stored in MongoDB database or in file.
 
-2. Customizable Charts: Select data items to display, choose chart types (Line, Bar, Pie), and customize chart appearance.
+## Features
 
-3. Real-Time Data: Charts and Table update in real-time as you make changes.
+- **Automated Data Logging:** Effortlessly log data with a one-time configuration. Once set, your data will be automatically captured as per your preferences. <img  src="https://i.ibb.co/mq849rj/An-illustration-of-a-computer-screen-showing-data-being-logged.jpg"  alt="Automated Data Logging"  />
 
-4. Downloadable Charts: Save your charts as images.
+- **Flexible Data Storage:** Choose your preferred data storage method: local system files, a locally hosted MongoDB, or the cloud with MongoDB Atlas. <img  src="https://i.ibb.co/jDJFFN5/An-illustration-of-a-user-selecting-storage-options-with-icons.jpg"  alt="Flexible Data Storage"  />
 
-5. Option to choose logs storage: Logs can be stored in mongoDB database or in file.
+- **See Previous Logs:** Access past data logs with ease. Select your preferred database and specify a date range to view the historical data you need. <img  src="https://i.ibb.co/qphmFJV/log-history.png"  alt="See Previous Logs"  />
 
-# Getting Started
+- **Automated Log Deletion:** Keep your data management efficient with auto-delete functionality. Configure the system to automatically delete logs after a set number of days, as specified in your configuration file. <img  src="https://i.ibb.co/YT5PNfX/auto-delete.png"  alt="Automated Log Deletion"  />
 
-1. Access the Application: Open your web browser and navigate to the URL provided by your administrator (e.g., http://localhost:3000).
+- **Real-Time Data Visualization:** Experience real-time data visualization with zero latency, thanks to Socket.io, allowing you to see your data instantly in the browser. <img  src="https://i.ibb.co/sgttpzy/real-Time-Data.png"  alt="Real-Time Data Visualization"  />
 
-# Using the Application
+- **Tabular Data Presentation:** View your data in a clear tabular format with options to include or exclude timestamps. <img  src="https://i.ibb.co/ZzBZ0DK/show-tabular-data.png"  alt="Tabular Data Presentation"  />
+
+- **Comprehensive Chart Visualizations:** Gain insights through various chart types, including line, bar, and pie charts. Customize and combine data as needed. <img  src="https://i.ibb.co/DMW1G42/chart-visualization.png"  alt="Comprehensive Chart Visualizations"  />
+
+- **Customizable Charts:** Personalize your charts by editing labels, colors, and types to suit your specific needs. <img  src="https://i.ibb.co/vZ61sbZ/customize-chart.png"  alt="Customizable Charts"  />
+
+- **Versatile Data Export:** Download your data in multiple formats: JSON, TXT, DOC, XLSX, PDF, and CSV, ensuring compatibility with various applications. <img  src="https://i.ibb.co/XWLsDQn/Download-data.png"  alt="Versatile Data Export"  />
+
+- **One-Click Chart Downloads:** Easily download charts with a single click for seamless sharing and reporting. <img  src="https://i.ibb.co/7XWHrsz/download-chart.png"  alt="One-Click Chart Downloads"  />
+
+- **Data Transmission to Devices:** Send commands or data to your serial devices for enhanced control and monitoring. <img  src="https://i.ibb.co/kJZ5kYX/send-data.png"  alt="Data Transmission to Devices"  />
+
+- **Browser-Based Configuration:** Set and manage your configuration files directly from the browser, streamlining your data logging process. <img  src="https://i.ibb.co/myhxwRz/configuration-setting.png"  alt="Browser-Based Configuration"  />
+
+- **Universal Compatibility:** Run the app on any device, including PCs, laptops, Raspberry Pi, and more, across any OS such as Windows, Linux, Mac, and even on embedded devices capable of running Node.js.<img  src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg"  alt="Universal Compatibility"  />
+
+## Getting Started
+
+- **Installation:**
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/abhisheksharma1310/data-logger.git
+   ```
+2. Navigate to the project directory:
+   ```
+   cd data-visualizer
+   ```
+3. Install dependencies:
+   ```
+   npm install
+   ```
+4. Start the server:
+   ```
+   npm start
+   ```
+
+- **Access the Application:** Open your web browser and navigate to the URL provided by your administrator (e.g., http://localhost:3000).
 
 ## Logging Data
 
-1. Ensure the Device is Connected: Make sure your sensor device is connected to the serial port.
+- **Ensure the Device is Connected:** Make sure your sensor device is connected to the serial port.
 
-2. View Real-Time Data: Real-time data from your sensor will be displayed as it is logged.
+- **View Real-Time Data:** Real-time data from your sensor will be displayed as it is logged.
 
-3. Today's Logs: Access today’s logs directly from the web interface. These logs are automatically reset at the start of each new day.
+- **Today's Logs:** Access today's logs directly from the web interface. These logs are automatically reset at the start of each new day.
 
 ## Viewing Logs
 
-1. Select a Date: Use the interface to choose a date for which you want to view logs.
+- **Select a Date:** Use the interface to choose a date for which you want to view logs.
 
-2. Fetch Logs: The application will fetch and display logs from both the log file and the database for the selected date.
+- **Fetch Logs:** The application will fetch and display logs from both the log file and the database for the selected date.
 
-# Customizing Your Charts
+## Customizing Your Charts
 
-## Select Data Items
+- **Choose Data Points:** Use the checkboxes to select which data items you want to display on your chart.
 
-1. Choose Data Points: Use the checkboxes to select which data items you want to display on your chart.
+- **Select Chart Type:** You can choose different chart types (Line, Bar, Pie) for each data item using the dropdown menu.
 
-## Choose Chart Type
+- **Edit Labels and Colors:** Customize the chart's label, background color, border color, and border width using the input fields provided.
 
-1. Select Chart Type: You can choose different chart types (Line, Bar, Pie) for each data item using the dropdown menu.
+- **Show Separate Charts:** Toggle the checkbox if you want to display each data item in separate charts.
 
-## Customize Chart Appearance
+## Contributing
 
-1. Edit Labels and Colors: Customize the chart's label, background color, border color, and border width using the input fields provided.
-
-## Display Options
-
-1. Show Separate Charts: Toggle the checkbox if you want to display each data item in separate charts.
-
-2. Download Chart: Click the "Download Chart as Image" button to save your customized charts as images.
+We welcome contributions! Please fork the repository and submit a pull request.
