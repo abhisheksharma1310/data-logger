@@ -5,9 +5,14 @@
   "description": "This web app helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "favicon.png",
       "sizes": "64x64",
       "type": "image/x-icon"
+    },
+    {
+      "src": "icon128.png",
+      "type": "image/png",
+      "sizes": "128x128"
     },
     {
       "src": "logo192.png",
@@ -42,13 +47,6 @@
       "type": "image/png",
       "sizes": "690x362",
       "form_factor": "narrow",
-      "label": "web app mockup image"
-    },
-    {
-      "src": "screenshot.jpeg",
-      "type": "image/jpeg",
-      "sizes": "1755x987",
-      "form_factor": "wide",
       "label": "web app mockup image"
     }
   ],
