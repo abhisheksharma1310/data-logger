@@ -1,17 +1,17 @@
 # Data Logger and Chart Visualization
 
-<div  width="100%">  <img  src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg"  alt="Data Logger Mockup"  />  <a  href="https://abhisheksharma1310.github.io/data-logger"  target="\_blank">Click here for live demo</a>  </div>
+<div  width="100%">  <img  src="https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png"  alt="Data Logger Mockup"  />  <a  href="https://abhisheksharma1310.github.io/data-logger"  target="\_blank">Click here for live demo</a>  </div>
 
-Welcome to the Data Logger and Chart Visualization application! This tool helps you seamlessly log and visualize sensor data, providing a user-friendly web interface for dynamic chart creation and customization.
+> This web application provides an all-encompassing solution for automated data logging and real-time visualization, featuring flexible storage options, historical data access, automated log deletion, customizable chart visualizations, and versatile data export capabilities, all managed through an intuitive browser-based configuration interface and compatible with a wide range of devices and operating systems.
 
 ## Table of Contents
 
-Overview
-Features
-Getting Started
-Logging Data
-Viewing Logs
-Customizing Your Charts
+- [Overview](#overview)
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Logging Data](#logging-data)
+- [Viewing Logs](#viewing-logs)
+- [Customizing Your Charts](#customizing-your-charts)
 
 ## Overview
 
@@ -47,7 +47,7 @@ Customizing Your Charts
 
 - **Browser-Based Configuration:** Set and manage your configuration files directly from the browser, streamlining your data logging process. <img  src="https://i.ibb.co/myhxwRz/configuration-setting.png"  alt="Browser-Based Configuration"  />
 
-- **Universal Compatibility:** Run the app on any device, including PCs, laptops, Raspberry Pi, and more, across any OS such as Windows, Linux, Mac, and even on embedded devices capable of running Node.js.<img  src="https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg"  alt="Universal Compatibility"  />
+- **Universal Compatibility:** Run the app on any device, including PCs, laptops, Raspberry Pi, and more, across any OS such as Windows, Linux, Mac, and even on embedded devices capable of running Node.js.<img  src="https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png"  alt="Universal Compatibility"  />
 
 ## Getting Started
 
@@ -59,7 +59,7 @@ Customizing Your Charts
    ```
 2. Navigate to the project directory:
    ```
-   cd data-visualizer
+   cd data-logger
    ```
 3. Install dependencies:
    ```
@@ -98,4 +98,4 @@ Customizing Your Charts
 
 ## Contributing
 
-We welcome contributions! Please fork the repository and submit a pull request.
+> We welcome contributions! Please fork the repository and submit a pull request.

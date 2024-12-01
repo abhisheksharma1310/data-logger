@@ -77,7 +77,8 @@ const features = [
     title: "Universal Compatibility",
     description:
       "Run the app on any device, including PCs, laptops, Raspberry Pi, and more, across any OS such as Windows, Linux, Mac, and even on embedded devices capable of running Node.js.",
-    imageUrl: "https://i.ibb.co/nBYGv1G/data-logger-mockup.jpg",
+    imageUrl:
+      "https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png",
   },
 ];
 
