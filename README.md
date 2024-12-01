@@ -1,6 +1,12 @@
 # Data Logger and Chart Visualization
 
-<div  width="100%">  <img  src="https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png"  alt="Data Logger Mockup"  />  <a  href="https://abhisheksharma1310.github.io/data-logger"  target="\_blank">Click here for live demo</a>  </div>
+<div  width="100%">  <img  src="https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png"  alt="Data Logger Mockup"/></div>
+
+<div>
+    <a  href="https://abhisheksharma1310.github.io/data-logger"  target="\_blank">Click here for live demo</a> 
+</div>
+
+<hr>
 
 > This web application provides an all-encompassing solution for automated data logging and real-time visualization, featuring flexible storage options, historical data access, automated log deletion, customizable chart visualizations, and versatile data export capabilities, all managed through an intuitive browser-based configuration interface and compatible with a wide range of devices and operating systems.
 
