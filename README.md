@@ -1,4 +1,4 @@
-# Data Logger and Chart Visualization
+# Data Logger and Chart Visualizer
 
 <div  width="100%">  <img  src="https://i.ibb.co/dGRxd7N/data-logger-mockup-removebg-preview.png"  alt="Data Logger Mockup"/></div>
 
